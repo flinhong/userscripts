@@ -1,0 +1,67 @@
+/* Default CSS configuration - loaded for all sites */
+/* google-font: Open Sans */
+/* google-font: Roboto */
+/* google-font: Roboto Slab */
+/* google-font: Source Code Pro */
+
+/* Global font definitions */
+@font-face {
+  font-family: 'System Sans';
+  src: local(system-ui), local(-apple-system), local(BlinkMacSystemFont), 
+       local("Segoe UI"), local(Roboto), local("Helvetica Neue"), local(Arial);
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'System Serif';
+  src: local(Georgia), local(Cambria), local("Times New Roman"), local(Times);
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'System Mono';
+  src: local(Consolas), local("Andale Mono WT"), local("Andale Mono"), 
+       local("Lucida Console"), local("Lucida Sans Typewriter");
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* CSS variables */
+:root {
+  /* Sans-serif fonts */
+  --font-sans-primary: "Open Sans", "System Sans", system-ui, -apple-system, 
+                       BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans-secondary: "Roboto", "System Sans", system-ui, -apple-system, 
+                         BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  
+  /* Serif fonts */
+  --font-serif-primary: "Roboto Slab", "System Serif", Georgia, Cambria, 
+                        "Times New Roman", Times, serif;
+  
+  /* Monospace fonts */
+  --font-mono-primary: "Source Code Pro", "System Mono", Consolas, 
+                       "Andale Mono WT", "Andale Mono", "Lucida Console", 
+                       "Lucida Sans Typewriter", "DejaVu Sans Mono", 
+                       "Bitstream Vera Sans Mono", "Liberation Mono", 
+                       "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  
+  /* Semantic font assignments */
+  --font-heading: var(--font-sans-primary);
+  --font-body: var(--font-sans-primary);
+  --font-code: var(--font-mono-primary);
+}
+
+/* Default styles using CSS variables */
+body {
+  font-family: var(--font-body) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading) !important;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--font-code) !important;
+}

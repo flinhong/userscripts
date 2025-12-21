@@ -1,0 +1,35 @@
+{
+  "name": "font-customization-userscript",
+  "version": "0.0.2",
+  "description": "A userscript for customizing fonts on websites with Google Fonts and CSS variables",
+  "main": "index.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "release": "node scripts/bump-version.js && node scripts/build.js",
+    "release:minor": "node scripts/bump-version.js minor && node scripts/build.js",
+    "release:major": "node scripts/bump-version.js major && node scripts/build.js",
+    "test": "node test/test.js",
+    "version:set": "node scripts/reset-version.js",
+    "version:reset": "node scripts/reset-version.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flinhong/userscripts.git"
+  },
+  "keywords": [
+    "userscript",
+    "tampermonkey",
+    "safari",
+    "fonts",
+    "css"
+  ],
+  "author": "Frank Lin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/flinhong/userscripts/issues"
+  },
+  "homepage": "https://github.com/flinhong/userscripts#readme",
+  "devDependencies": {
+    "terser": "^5.0.0"
+  }
+}

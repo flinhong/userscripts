@@ -1,0 +1,100 @@
+{
+  "testEnvironments": {
+    "local": {
+      "name": "Local Development",
+      "description": "Tests local build with development configuration",
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "expectedUrls": [
+        "http://localhost",
+        "file://",
+        "relative paths"
+      ]
+    },
+    "release": {
+      "name": "Production Release",
+      "description": "Tests release build with production URLs",
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "expectedUrls": [
+        "https://cdn.jsdelivr.net",
+        "https://github.com"
+      ]
+    }
+  },
+  "buildTargets": [
+    {
+      "name": "Tampermonkey",
+      "file": "dist/tampermonkey.js",
+      "requiredHeaders": [
+        "==UserScript==",
+        "==/UserScript==",
+        "@name",
+        "@namespace",
+        "@version",
+        "@description",
+        "@author",
+        "@match",
+        "@run-at"
+      ],
+      "requiredGrants": [
+        "GM_xmlhttpRequest",
+        "GM_addStyle",
+        "GM_info"
+      ],
+      "requiredConnects": [
+        "cdn.jsdelivr.net",
+        "google-fonts.mirrors.sjtug.sjtu.edu.cn",
+        "fonts.googleapis.com"
+      ]
+    },
+    {
+      "name": "Userscripts",
+      "file": "dist/userscripts.js",
+      "requiredHeaders": [
+        "==UserScript==",
+        "==/UserScript==",
+        "@name",
+        "@namespace",
+        "@version",
+        "@description",
+        "@author",
+        "@match",
+        "@run-at"
+      ],
+      "requiredGrants": [
+        "none"
+      ]
+    }
+  ],
+  "coreFunctions": [
+    "CONFIG_BASE_URL",
+    "FONTS_CSS_URL",
+    "SITE_CONFIG_URL",
+    "DOMAIN_MAP_URL",
+    "extractGoogleFonts",
+    "loadConfig",
+    "applyFontStyles"
+  ],
+  "cssValidation": {
+    "requiredProperties": [
+      "font-family"
+    ],
+    "optionalProperties": [
+      "font-weight",
+      "font-style",
+      "font-size",
+      "line-height"
+    ],
+    "cssVariables": [
+      "--font-primary",
+      "--font-secondary",
+      "--font-mono"
+    ]
+  },
+  "testTimeout": 30000,
+  "maxFileSizeKB": 100,
+  "minFileSizeKB": 5
+}

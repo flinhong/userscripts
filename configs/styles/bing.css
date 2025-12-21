@@ -1,0 +1,18 @@
+/* Bing-specific font customization */
+/* google-font: Roboto */
+
+body, .b_searchbox, .b_algo, .b_caption {
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif !important;
+}
+
+.b_searchboxForm input {
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif !important;
+}
+
+.b_pag {
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif !important;
+}
+
+.b_focusText {
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif !important;
+}

@@ -1,0 +1,29 @@
+/* Global font definitions - loaded for all sites */
+/* google-font: Open Sans */
+/* google-font: Roboto */
+/* google-font: Roboto Slab */
+/* google-font: Source Code Pro */
+/* google-font: Fira Code */
+
+@font-face {
+  font-family: 'System Sans';
+  src: local(system-ui), local(-apple-system), local(BlinkMacSystemFont), 
+       local("Segoe UI"), local(Roboto), local("Helvetica Neue"), local(Arial);
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'System Serif';
+  src: local(Georgia), local(Cambria), local("Times New Roman"), local(Times);
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'System Mono';
+  src: local(Consolas), local("Andale Mono WT"), local("Andale Mono"), 
+       local("Lucida Console"), local("Lucida Sans Typewriter");
+  font-style: normal;
+  font-weight: normal;
+}
