@@ -1,87 +1,13 @@
-# Dependencies
+# Node.js
 node_modules/
-package-lock.json
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Build outputs - comment out if you want to track built userscripts
 dist/
-build/
-*.js.map
-
-# Environment files
+npm-debug.log
+yarn-error.log
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS generated files
+# macOS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
 
-# Logs
-logs
-*.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
-.nyc_output
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Temporary folders
-tmp/
-temp/
-.tmp/
-.temp/
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Local configuration overrides
-config.local.json
-domain-map.local.json
-
-# Userscript specific
-# Backup and development files
-*.bak
-*.backup
-*.dev
-
-# Release candidate files
-*.rc
-*.pre
+# Gemini temporary files
+.geminiignore
+.gemini/

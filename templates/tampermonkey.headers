@@ -1,15 +1,12 @@
 // ==UserScript==
-// @name         Custom Font Styler (Tampermonkey)
-// @namespace    https://github.com/user/repo
-// @version      0.0.1
-// @description  Customize fonts on websites using CSS variables (Tampermonkey optimized)
+// @name         Font Customizer
+// @namespace    http://tampermonkey.net/
+// @version      __VERSION__
+// @description  Customize fonts on websites
 // @author       You
-DYNAMIC_MATCHES_WILL_BE_INSERTED_HERE
-// @grant        GM_xmlhttpRequest
+// @match        __MATCH_PATTERNS__
 // @grant        GM_addStyle
-// @grant        GM_info
 // @connect      cdn.jsdelivr.net
-// @connect      google-fonts.mirrors.sjtug.sjtu.edu.cn
-// @connect      fonts.googleapis.com
-// @run-at       document-start
+// @downloadURL  __DOWNLOAD_URL__
+// @updateURL    __UPDATE_URL__
 // ==/UserScript==

@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         Custom Font Styler (Userscripts)
-// @namespace    https://github.com/user/repo
-// @version      0.0.1
-// @description  Customize fonts on websites using CSS variables (Userscripts optimized)
+// @name         Font Customizer
+// @namespace    http://userscripts.org/
+// @version      __VERSION__
+// @description  Customize fonts on websites
 // @author       You
-DYNAMIC_MATCHES_WILL_BE_INSERTED_HERE
-// @run-at       document-start
+// @match        __MATCH_PATTERNS__
+// @downloadURL  __DOWNLOAD_URL__
+// @updateURL    __UPDATE_URL__
 // ==/UserScript==

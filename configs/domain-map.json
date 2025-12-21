@@ -1,12 +1,19 @@
-{
-  "bing.com": "bing",
-  "www.bing.com": "bing",
-  "cn.bing.com": "bing",
-  
-  "google.com": "google",
-  "www.google.com": "google",
-  "www.google.co.uk": "google",
-
-  "*.wikipedia.org": "wikipedia",
-  "*.wikimedia.org": "wikipedia"
-}
+[
+  {
+    "name": "github",
+    "domains": ["github.com", "gist.github.com"]
+  },
+  {
+    "name": "bing",
+    "domains": ["bing.com"]
+  },
+  {
+    "name": "google",
+    "domains": ["google.com", "google.co.uk", "google.com.hk", "google.de"]
+  },
+  {
+    "name": "chatgpt",
+    "domains": ["chatgpt.com"],
+    "useGoogleFonts": false
+  }
+]

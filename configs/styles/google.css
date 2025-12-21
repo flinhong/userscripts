@@ -1,18 +1,7 @@
-/* Google-specific font customization */
-/* google-font: Inter */
-
-body, .g, .s, .a, .Rq5Gcb, .yDYNvb {
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+:root {
+  --font-family-sans: "Roboto", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
-#searchform input {
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
-}
-
-.gb_je, .gb_h {
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
-}
-
-result-section {
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif !important;
+body {
+  font-family: var(--font-family-sans);
 }

@@ -1,38 +1,31 @@
 {
-  "name": "font-customization-userscript",
-  "version": "0.0.1",
-  "description": "A userscript for customizing fonts on websites with Google Fonts and CSS variables",
+  "name": "userscripts",
+  "version": "1.0.0",
+  "description": "A userscript for customizing fonts on websites using CSS variables and Google Fonts with fallbacks to system fonts. Works with both Tampermonkey and Userscripts.",
   "main": "index.js",
   "scripts": {
-    "build": "node scripts/build.js",
-    "release": "node scripts/bump-version.js && node scripts/build.js",
-    "release:minor": "node scripts/bump-version.js minor && node scripts/build.js",
-    "release:major": "node scripts/bump-version.js major && node scripts/build.js",
-    "release:patch": "node scripts/bump-version.js patch && node scripts/build.js",
-    "release:dry": "node scripts/bump-version.js --dry-run",
-    "test": "node test/test.js",
-    "version:set": "node scripts/reset-version.js",
-    "version:reset": "node scripts/reset-version.js",
-    "version:no-git": "node scripts/reset-version.js --no-git"
+    "clean": "rm -rf dist",
+    "build": "npm run clean && node scripts/build.js",
+    "release": "node scripts/release.js bump patch",
+    "release:minor": "node scripts/release.js bump minor",
+    "release:major": "node scripts/release.js bump major",
+    "release:dryrun": "node scripts/release.js bump patch --dryrun",
+    "version:set": "node scripts/release.js set",
+    "version:reset": "node scripts/release.js reset"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/flinhong/userscripts.git"
   },
-  "keywords": [
-    "userscript",
-    "tampermonkey",
-    "safari",
-    "fonts",
-    "css"
-  ],
-  "author": "Frank Lin",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/flinhong/userscripts/issues"
   },
   "homepage": "https://github.com/flinhong/userscripts#readme",
   "devDependencies": {
-    "terser": "^5.0.0"
+    "semver": "^7.7.3"
   }
 }
