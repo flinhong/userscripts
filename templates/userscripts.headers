@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler (Userscripts)
 // @namespace    https://github.com/user/repo
-// @version      0.0.2
+// @version      0.0.1
 // @description  Customize fonts on websites using CSS variables (Userscripts optimized)
 // @author       You
 DYNAMIC_MATCHES_WILL_BE_INSERTED_HERE

@@ -1,6 +1,6 @@
 {
   "name": "font-customization-userscript",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "A userscript for customizing fonts on websites with Google Fonts and CSS variables",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,12 @@
     "release": "node scripts/bump-version.js && node scripts/build.js",
     "release:minor": "node scripts/bump-version.js minor && node scripts/build.js",
     "release:major": "node scripts/bump-version.js major && node scripts/build.js",
+    "release:patch": "node scripts/bump-version.js patch && node scripts/build.js",
+    "release:dry": "node scripts/bump-version.js --dry-run",
     "test": "node test/test.js",
     "version:set": "node scripts/reset-version.js",
-    "version:reset": "node scripts/reset-version.js"
+    "version:reset": "node scripts/reset-version.js",
+    "version:no-git": "node scripts/reset-version.js --no-git"
   },
   "repository": {
     "type": "git",
