@@ -5,6 +5,8 @@
 // @description  Customize fonts on websites
 // @author       You
 // @match        __MATCH_PATTERNS__
+
 // @downloadURL  __DOWNLOAD_URL__
 // @updateURL    __UPDATE_URL__
+__RESOURCE_DECLARATIONS__
 // ==/UserScript==

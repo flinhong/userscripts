@@ -1,0 +1,33 @@
+{
+  "domains": [
+    {
+      "name": "github",
+      "matches": ["github.com", "*.github.com"],
+      "style": "github"
+    },
+    {
+      "name": "bing",
+      "matches": ["bing.com", "*.bing.com"],
+      "style": "bing"
+    },
+    {
+      "name": "google",
+      "matches": [
+        "google.com",
+        "*.google.com",
+        "google.co.uk",
+        "*.google.co.uk",
+        "google.com.hk",
+        "*.google.com.hk",
+        "google.de",
+        "*.google.de"
+      ],
+      "style": "google"
+    },
+    {
+      "name": "chatgpt",
+      "matches": ["chatgpt.com", "*.chatgpt.com"],
+      "style": "chatgpt"
+    }
+  ]
+}

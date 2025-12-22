@@ -19,29 +19,31 @@ function getVersion() {
 }
 
 function getDomainMappings() {
-    const domainMapPath = path.join(configsDir, 'domain-map.json');
-    const sourceMap = JSON.parse(fs.readFileSync(domainMapPath, 'utf8'));
+    const domainMapPath = path.join(configsDir, 'domain.json');
+    const config = JSON.parse(fs.readFileSync(domainMapPath, 'utf8'));
+    const domains = config.domains;
     
-    const runtimeMap = {};
-    const allDomains = new Set();
-
-    for (const group of sourceMap) {
-        const styleName = group.name;
-        for (const domain of group.domains) {
-            runtimeMap[domain] = styleName;
-            allDomains.add(domain);
-        }
-    }
-    return { runtimeMap, allDomains };
+    const allDomains = [];
+    const allMatchPatterns = [];
+    
+    // Flatten all matches from all domain groups
+    domains.forEach(domainGroup => {
+        domainGroup.matches.forEach(match => {
+            if (match.startsWith('*.')) {
+                allDomains.push(match.substring(2)); // Remove '*.'
+            } else {
+                allDomains.push(match);
+            }
+            allMatchPatterns.push(match);
+        });
+    });
+    
+    return { domains, allDomains, allMatchPatterns };
 }
 
-function getMatchPatterns(allDomains) {
-    const patterns = [];
-    Array.from(allDomains).forEach(domain => {
-        patterns.push(`*://${domain}/*`);
-        patterns.push(`*://*.${domain}/*`);
-    });
-    return patterns;
+function getMatchPatterns(allMatchPatterns) {
+    const patterns = allMatchPatterns.map(match => `*://${match}/*`);
+    return Array.from(new Set(patterns)).sort();
 }
 
 function buildCss() {
@@ -49,36 +51,21 @@ function buildCss() {
         fs.mkdirSync(distStylesDir, { recursive: true });
     }
 
-    const fontsCss = fs.readFileSync(path.join(stylesDir, 'fonts.css'), 'utf8');
-    const defaultCss = fs.readFileSync(path.join(stylesDir, 'default.css'), 'utf8');
-    
-    const baseCssWithoutFonts = defaultCss;
-    const baseCssWithFonts = `${fontsCss}\n${defaultCss}`;
+    const { domains } = getDomainMappings();
+    const uniqueStyles = new Set();
 
-    fs.writeFileSync(path.join(distStylesDir, 'default.css'), baseCssWithFonts);
-
-    const sourceMap = JSON.parse(fs.readFileSync(path.join(configsDir, 'domain-map.json'), 'utf8'));
-    const styleGroups = new Map(sourceMap.map(g => [g.name, g]));
-
-    fs.readdirSync(stylesDir).forEach(file => {
-        if (file.endsWith('.css') && !['default.css', 'fonts.css', 'main.css'].includes(file)) {
-            const styleName = file.replace('.css', '');
-            if (!styleGroups.has(styleName)) {
-                styleGroups.set(styleName, { name: styleName, useGoogleFonts: true });
-            }
-        }
+    // Collect all unique styles
+    domains.forEach(domainGroup => {
+        uniqueStyles.add(domainGroup.style);
     });
-    
-    styleGroups.forEach(group => {
-        const styleName = group.name;
+
+    // Copy CSS files directly to dist/styles
+    uniqueStyles.forEach((styleName) => {
         const styleFilePath = path.join(stylesDir, `${styleName}.css`);
-        const useGoogleFonts = group.useGoogleFonts !== false;
         
         if (fs.existsSync(styleFilePath)) {
-            const siteCss = fs.readFileSync(styleFilePath, 'utf8');
-            const base = useGoogleFonts ? baseCssWithFonts : baseCssWithoutFonts;
-            const fullCss = `${base}\n${siteCss}`;
-            fs.writeFileSync(path.join(distStylesDir, `${styleName}.css`), fullCss);
+            const cssContent = fs.readFileSync(styleFilePath, 'utf8');
+            fs.writeFileSync(path.join(distStylesDir, `${styleName}.css`), cssContent);
         }
     });
 
@@ -93,49 +80,83 @@ function build() {
     buildCss();
 
     const version = getVersion();
-    const { runtimeMap, allDomains } = getDomainMappings();
-    const matchPatterns = getMatchPatterns(allDomains);
+    const { domains, allDomains, allMatchPatterns } = getDomainMappings();
+    const matchPatterns = getMatchPatterns(allMatchPatterns);
 
-    const coreJs = fs.readFileSync(path.join(srcDir, 'core.js'), 'utf8')
-        .replace(/__VERSION__/g, version)
-        .replace('__DOMAIN_MAP__', JSON.stringify(runtimeMap, null, 4))
-        .replace('__SORTED_DOMAIN_KEYS__', JSON.stringify(Object.keys(runtimeMap).sort((a, b) => b.length - a.length), null, 4));
+    // Generate resource declarations for CSS files (only for Tampermonkey)
+    function generateResourceDeclarations() {
+        const resourceLines = [];
+        const processedDomainGroups = new Set();
+        
+        domains.forEach(domainGroup => {
+            const { name, style } = domainGroup;
+            
+            if (!processedDomainGroups.has(name)) {
+                const cssContent = fs.readFileSync(path.join(distStylesDir, `${style}.css`), 'utf8');
+                
+                // Escape CSS content for resource declaration
+                const escapedCss = cssContent
+                    .replace(/\\/g, '\\\\')
+                    .replace(/"/g, '\\"')
+                    .replace(/\n/g, '\\n')
+                    .replace(/\r/g, '');
+                
+                resourceLines.push(`// @resource css_${name} data:text/css;charset=utf-8,${escapedCss}`);
+                processedDomainGroups.add(name);
+            }
+        });
+        
+        return resourceLines.join('\n');
+    }
+    
+    const resourceDeclarations = generateResourceDeclarations();
+    const fullCoreJs = fs.readFileSync(path.join(srcDir, 'core.js'), 'utf8');
+    
+    // Extract tampermonkey function
+    const tampermonkeyMatch = fullCoreJs.match(/function tampermonkeyCore\(\) \{[\s\S]*?\n\}/);
+    const tampermonkeyCoreJs = tampermonkeyMatch ? `(${tampermonkeyMatch[0]});\n\ntampermonkeyCore();` : '';
+    
+    // Extract userscripts function
+    const userscriptsMatch = fullCoreJs.match(/function userscriptsCore\(\) \{[\s\S]*?\n\}/);
+    const userscriptsCoreJs = userscriptsMatch ? `(${userscriptsMatch[0]});\n\nuserscriptsCore();` : '';
 
     // --- Build Tampermonkey Script ---
-    const tampermonkeyDownloadUrl = `${repoBaseUrl}@${version}/dist/tampermonkey.js`;
-    const tampermonkeyUpdateUrl = `${repoBaseUrl}@${version}/dist/tampermonkey.meta.js`;
+    const tampermonkeyDownloadUrl = `${repoBaseUrl}/dist/tampermonkey.js`;
+    const tampermonkeyUpdateUrl = `${repoBaseUrl}/dist/tampermonkey.meta.js`;
 
     const tampermonkeyHeader = fs.readFileSync(path.join(templatesDir, 'tampermonkey.headers'), 'utf8')
         .replace(/__VERSION__/g, version)
         .replace('__MATCH_PATTERNS__', matchPatterns.join('\n// @match        '))
         .replace('__DOWNLOAD_URL__', tampermonkeyDownloadUrl)
-        .replace('__UPDATE_URL__', tampermonkeyUpdateUrl);
+        .replace('__UPDATE_URL__', tampermonkeyUpdateUrl)
+        .replace('__RESOURCE_DECLARATIONS__', resourceDeclarations);
 
     // Write .meta.js file
     fs.writeFileSync(path.join(distDir, 'tampermonkey.meta.js'), tampermonkeyHeader);
     console.log('Successfully built tampermonkey.meta.js');
     
     // Write .user.js file
-    const tampermonkeyScript = `${tampermonkeyHeader}\n\n${coreJs}`;
+    const tampermonkeyScript = `${tampermonkeyHeader}\n\n${tampermonkeyCoreJs}`;
     fs.writeFileSync(path.join(distDir, 'tampermonkey.js'), tampermonkeyScript);
     console.log('Successfully built tampermonkey.js');
 
     // --- Build Userscripts Script ---
-    const userscriptsDownloadUrl = `${repoBaseUrl}@${version}/dist/userscripts.js`;
-    const userscriptsUpdateUrl = `${repoBaseUrl}@${version}/dist/userscripts.meta.js`;
+    const userscriptsDownloadUrl = `${repoBaseUrl}/dist/userscripts.js`;
+    const userscriptsUpdateUrl = `${repoBaseUrl}/dist/userscripts.meta.js`;
 
     const userscriptsHeader = fs.readFileSync(path.join(templatesDir, 'userscripts.headers'), 'utf8')
         .replace(/__VERSION__/g, version)
         .replace('__MATCH_PATTERNS__', matchPatterns.join('\n// @match        '))
         .replace('__DOWNLOAD_URL__', userscriptsDownloadUrl)
-        .replace('__UPDATE_URL__', userscriptsUpdateUrl);
+        .replace('__UPDATE_URL__', userscriptsUpdateUrl)
+        .replace('__RESOURCE_DECLARATIONS__', ''); // No resource declarations for userscripts
 
     // Write .meta.js file
     fs.writeFileSync(path.join(distDir, 'userscripts.meta.js'), userscriptsHeader);
     console.log('Successfully built userscripts.meta.js');
 
     // Write .user.js file
-    const userscriptsScript = `${userscriptsHeader}\n\n${coreJs}`;
+    const userscriptsScript = `${userscriptsHeader}\n\n${userscriptsCoreJs}`;
     fs.writeFileSync(path.join(distDir, 'userscripts.js'), userscriptsScript);
     console.log('Successfully built userscripts.js');
 }

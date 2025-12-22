@@ -6,7 +6,9 @@
 // @author       You
 // @match        __MATCH_PATTERNS__
 // @grant        GM_addStyle
+// @grant        GM_getResourceText
 // @connect      cdn.jsdelivr.net
 // @downloadURL  __DOWNLOAD_URL__
 // @updateURL    __UPDATE_URL__
+__RESOURCE_DECLARATIONS__
 // ==/UserScript==
