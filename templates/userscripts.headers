@@ -1,12 +1,11 @@
 // ==UserScript==
-// @name         Font Customizer
-// @namespace    http://userscripts.org/
-// @version      __VERSION__
-// @description  Customize fonts on websites
-// @author       You
-// @match        __MATCH_PATTERNS__
-
-// @downloadURL  __DOWNLOAD_URL__
-// @updateURL    __UPDATE_URL__
-__RESOURCE_DECLARATIONS__
+// @name          Enhanced Font Customizer
+// @namespace     https://github.com/flinhong/userscripts
+// @version       __VERSION__
+// @description   根据用户需求，自定义网页字体风格，提升阅读体验。
+// @author        flinhong
+// @match         __MATCH_PATTERNS__
+// @run-at        document-start
+// @downloadURL   __DOWNLOAD_URL__
+// @updateURL     __UPDATE_URL__
 // ==/UserScript==

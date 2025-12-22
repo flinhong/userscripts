@@ -1,33 +1,25 @@
 {
-  "domains": [
+  "rules": [
     {
       "name": "github",
-      "matches": ["github.com", "*.github.com"],
-      "style": "github"
+      "domains": ["github.com"]
     },
     {
       "name": "bing",
-      "matches": ["bing.com", "*.bing.com"],
-      "style": "bing"
+      "domains": ["bing.com"]
     },
     {
       "name": "google",
-      "matches": [
+      "domains": [
         "google.com",
-        "*.google.com",
         "google.co.uk",
-        "*.google.co.uk",
         "google.com.hk",
-        "*.google.com.hk",
-        "google.de",
-        "*.google.de"
-      ],
-      "style": "google"
+        "google.de"
+      ]
     },
     {
       "name": "chatgpt",
-      "matches": ["chatgpt.com", "*.chatgpt.com"],
-      "style": "chatgpt"
+      "domains": ["chatgpt.com"]
     }
   ]
 }

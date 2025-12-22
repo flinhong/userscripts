@@ -18,49 +18,36 @@ function getVersion() {
     return JSON.parse(versionFile).version;
 }
 
-function getDomainMappings() {
-    const domainMapPath = path.join(configsDir, 'domain.json');
-    const config = JSON.parse(fs.readFileSync(domainMapPath, 'utf8'));
-    const domains = config.domains;
-    
-    const allDomains = [];
-    const allMatchPatterns = [];
-    
-    // Flatten all matches from all domain groups
-    domains.forEach(domainGroup => {
-        domainGroup.matches.forEach(match => {
-            if (match.startsWith('*.')) {
-                allDomains.push(match.substring(2)); // Remove '*.'
-            } else {
-                allDomains.push(match);
-            }
-            allMatchPatterns.push(match);
+function processRules() {
+    const domainConfigPath = path.join(configsDir, 'domain.json');
+    const config = JSON.parse(fs.readFileSync(domainConfigPath, 'utf8'));
+    const rules = config.rules;
+
+    const allMatchPatterns = new Set();
+    const uniqueStyles = new Set();
+
+    rules.forEach(rule => {
+        uniqueStyles.add(rule.name);
+        rule.domains.forEach(domain => {
+            allMatchPatterns.add(`*://${domain}/*`);
+            allMatchPatterns.add(`*://*.${domain}/*`);
         });
     });
+
+    const sortedMatchPatterns = Array.from(allMatchPatterns).sort();
     
-    return { domains, allDomains, allMatchPatterns };
+    return {
+        matchPatterns: sortedMatchPatterns,
+        styleNames: Array.from(uniqueStyles)
+    };
 }
 
-function getMatchPatterns(allMatchPatterns) {
-    const patterns = allMatchPatterns.map(match => `*://${match}/*`);
-    return Array.from(new Set(patterns)).sort();
-}
-
-function buildCss() {
+function buildCss(styleNames) {
     if (!fs.existsSync(distStylesDir)) {
         fs.mkdirSync(distStylesDir, { recursive: true });
     }
 
-    const { domains } = getDomainMappings();
-    const uniqueStyles = new Set();
-
-    // Collect all unique styles
-    domains.forEach(domainGroup => {
-        uniqueStyles.add(domainGroup.style);
-    });
-
-    // Copy CSS files directly to dist/styles
-    uniqueStyles.forEach((styleName) => {
+    styleNames.forEach((styleName) => {
         const styleFilePath = path.join(stylesDir, `${styleName}.css`);
         
         if (fs.existsSync(styleFilePath)) {
@@ -77,48 +64,31 @@ function build() {
         fs.mkdirSync(distDir);
     }
 
-    buildCss();
-
     const version = getVersion();
-    const { domains, allDomains, allMatchPatterns } = getDomainMappings();
-    const matchPatterns = getMatchPatterns(allMatchPatterns);
+    const { matchPatterns, styleNames } = processRules();
 
-    // Generate resource declarations for CSS files (only for Tampermonkey)
-    function generateResourceDeclarations() {
-        const resourceLines = [];
-        const processedDomainGroups = new Set();
-        
-        domains.forEach(domainGroup => {
-            const { name, style } = domainGroup;
-            
-            if (!processedDomainGroups.has(name)) {
-                const cssContent = fs.readFileSync(path.join(distStylesDir, `${style}.css`), 'utf8');
-                
-                // Escape CSS content for resource declaration
-                const escapedCss = cssContent
-                    .replace(/\\/g, '\\\\')
-                    .replace(/"/g, '\\"')
-                    .replace(/\n/g, '\\n')
-                    .replace(/\r/g, '');
-                
-                resourceLines.push(`// @resource css_${name} data:text/css;charset=utf-8,${escapedCss}`);
-                processedDomainGroups.add(name);
-            }
-        });
-        
-        return resourceLines.join('\n');
+    buildCss(styleNames);
+
+    function generateResourceDeclarations(styleNames) {
+        return styleNames.map(name => {
+            const cssUrl = `${repoBaseUrl}/dist/styles/${name}.css`;
+            return `// @resource      css_${name} ${cssUrl}`;
+        }).join('\n');
     }
     
-    const resourceDeclarations = generateResourceDeclarations();
+    const resourceDeclarations = generateResourceDeclarations(styleNames);
     const fullCoreJs = fs.readFileSync(path.join(srcDir, 'core.js'), 'utf8');
     
-    // Extract tampermonkey function
     const tampermonkeyMatch = fullCoreJs.match(/function tampermonkeyCore\(\) \{[\s\S]*?\n\}/);
     const tampermonkeyCoreJs = tampermonkeyMatch ? `(${tampermonkeyMatch[0]});\n\ntampermonkeyCore();` : '';
     
-    // Extract userscripts function
-    const userscriptsMatch = fullCoreJs.match(/function userscriptsCore\(\) \{[\s\S]*?\n\}/);
-    const userscriptsCoreJs = userscriptsMatch ? `(${userscriptsMatch[0]});\n\nuserscriptsCore();` : '';
+    const userscriptsMatch = fullCoreJs.match(/function userscriptsCore\(.*?\) \{[\s\S]*?\n\}/);
+    const userscriptsFunc = userscriptsMatch ? userscriptsMatch[0] : '';
+    
+    const cssBaseUrl = `${repoBaseUrl}/dist/styles/`;
+    const userscriptsCoreJs = `(${userscriptsFunc});\n\nuserscriptsCore(${JSON.stringify(cssBaseUrl)});`;
+
+    const matchPatternStr = matchPatterns.join('\n// @match         ');
 
     // --- Build Tampermonkey Script ---
     const tampermonkeyDownloadUrl = `${repoBaseUrl}/dist/tampermonkey.js`;
@@ -126,16 +96,14 @@ function build() {
 
     const tampermonkeyHeader = fs.readFileSync(path.join(templatesDir, 'tampermonkey.headers'), 'utf8')
         .replace(/__VERSION__/g, version)
-        .replace('__MATCH_PATTERNS__', matchPatterns.join('\n// @match        '))
+        .replace('__MATCH_PATTERNS__', matchPatternStr)
         .replace('__DOWNLOAD_URL__', tampermonkeyDownloadUrl)
         .replace('__UPDATE_URL__', tampermonkeyUpdateUrl)
         .replace('__RESOURCE_DECLARATIONS__', resourceDeclarations);
 
-    // Write .meta.js file
     fs.writeFileSync(path.join(distDir, 'tampermonkey.meta.js'), tampermonkeyHeader);
     console.log('Successfully built tampermonkey.meta.js');
     
-    // Write .user.js file
     const tampermonkeyScript = `${tampermonkeyHeader}\n\n${tampermonkeyCoreJs}`;
     fs.writeFileSync(path.join(distDir, 'tampermonkey.js'), tampermonkeyScript);
     console.log('Successfully built tampermonkey.js');
@@ -146,22 +114,18 @@ function build() {
 
     const userscriptsHeader = fs.readFileSync(path.join(templatesDir, 'userscripts.headers'), 'utf8')
         .replace(/__VERSION__/g, version)
-        .replace('__MATCH_PATTERNS__', matchPatterns.join('\n// @match        '))
+        .replace('__MATCH_PATTERNS__', matchPatternStr)
         .replace('__DOWNLOAD_URL__', userscriptsDownloadUrl)
-        .replace('__UPDATE_URL__', userscriptsUpdateUrl)
-        .replace('__RESOURCE_DECLARATIONS__', ''); // No resource declarations for userscripts
+        .replace('__UPDATE_URL__', userscriptsUpdateUrl);
 
-    // Write .meta.js file
     fs.writeFileSync(path.join(distDir, 'userscripts.meta.js'), userscriptsHeader);
     console.log('Successfully built userscripts.meta.js');
 
-    // Write .user.js file
     const userscriptsScript = `${userscriptsHeader}\n\n${userscriptsCoreJs}`;
     fs.writeFileSync(path.join(distDir, 'userscripts.js'), userscriptsScript);
     console.log('Successfully built userscripts.js');
 }
 
-// Only run build() if not being imported (i.e., not during testing)
 if (require.main === module) {
     build();
 }

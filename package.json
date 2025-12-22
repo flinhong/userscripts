@@ -1,7 +1,7 @@
 {
   "name": "userscripts",
   "version": "1.0.0",
-  "description": "A userscript for customizing fonts on websites using CSS variables and Google Fonts with fallbacks to system fonts. Works with both Tampermonkey and Userscripts.",
+  "description": "根据用户需求，自定义网页字体风格，提升阅读体验。",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf dist",
