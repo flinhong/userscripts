@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Web Styler
 // @namespace    https://github.com/flinhong/userscripts
-// @version      1.0.4
+// @version      1.0.5
 // @description  Apply custom CSS styles to various websites
 // @author       flinhong
 // @match        *://*/*
