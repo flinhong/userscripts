@@ -1,24 +1,24 @@
 {
   "rules": [
     {
-      "name": "github",
+      "css": "github",
       "domains": ["github.com"]
     },
     {
-      "name": "bing",
-      "domains": ["bing.com"]
+      "css": "bing",
+      "domains": ["bing.com", "www.bing.com", "cn.bing.com"]
     },
     {
-      "name": "google",
+      "css": "google",
       "domains": [
         "google.com",
-        "google.co.uk",
-        "google.com.hk",
-        "google.de"
+        "www.google.com",
+        "www.google.co.uk",
+        "www.google.com.hk"
       ]
     },
     {
-      "name": "chatgpt",
+      "css": "chatgpt",
       "domains": ["chatgpt.com"]
     }
   ]

@@ -1,131 +1,304 @@
 const fs = require('fs');
 const path = require('path');
 
-const projectRoot = path.join(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '..');
+const domainConfig = JSON.parse(fs.readFileSync(path.join(projectRoot, 'configs/domain.json'), 'utf8'));
+const versionConfig = JSON.parse(fs.readFileSync(path.join(projectRoot, 'configs/version.json'), 'utf8'));
 
-const distDir = path.join(projectRoot, 'dist');
-const srcDir = path.join(projectRoot, 'src');
-const templatesDir = path.join(projectRoot, 'templates');
-const configsDir = path.join(projectRoot, 'configs');
-const stylesDir = path.join(configsDir, 'styles');
-const distStylesDir = path.join(distDir, 'styles');
-
-const repoBaseUrl = 'https://cdn.jsdelivr.net/gh/flinhong/userscripts';
-
-function getVersion() {
-    const versionPath = path.join(configsDir, 'version.json');
-    const versionFile = fs.readFileSync(versionPath, 'utf8');
-    return JSON.parse(versionFile).version;
+// Create public directory if it doesn't exist
+const publicDir = path.join(projectRoot, 'public');
+if (!fs.existsSync(publicDir)) {
+  fs.mkdirSync(publicDir, { recursive: true });
 }
 
-function processRules() {
-    const domainConfigPath = path.join(configsDir, 'domain.json');
-    const config = JSON.parse(fs.readFileSync(domainConfigPath, 'utf8'));
-    const rules = config.rules;
+// Generate JSONP callback data from domain.json
+const jsonpData = JSON.stringify({ rules: domainConfig.rules });
+const jsonpCallback = 'domainConfig';
+const jsonpContent = `${jsonpCallback}(${jsonpData});`;
 
-    const allMatchPatterns = new Set();
-    const uniqueStyles = new Set();
+// Write JSONP file
+fs.writeFileSync(
+  path.join(publicDir, 'domain.jsonp'),
+  jsonpContent
+);
+console.log('✓ Generated: public/domain.jsonp');
 
-    rules.forEach(rule => {
-        uniqueStyles.add(rule.name);
-        rule.domains.forEach(domain => {
-            allMatchPatterns.add(`*://${domain}/*`);
-            allMatchPatterns.add(`*://*.${domain}/*`);
-        });
-    });
-
-    const sortedMatchPatterns = Array.from(allMatchPatterns).sort();
-    
-    return {
-        matchPatterns: sortedMatchPatterns,
-        styleNames: Array.from(uniqueStyles)
-    };
+// Copy styles to public directory
+const publicStylesDir = path.join(publicDir, 'styles');
+if (!fs.existsSync(publicStylesDir)) {
+  fs.mkdirSync(publicStylesDir, { recursive: true });
 }
 
-function buildCss(styleNames) {
-    if (!fs.existsSync(distStylesDir)) {
-        fs.mkdirSync(distStylesDir, { recursive: true });
+domainConfig.rules.forEach(rule => {
+  const sourceCssPath = path.join(projectRoot, 'configs/styles', `${rule.css}.css`);
+  const targetCssPath = path.join(publicStylesDir, `${rule.css}.css`);
+  if (fs.existsSync(sourceCssPath)) {
+    fs.copyFileSync(sourceCssPath, targetCssPath);
+    console.log(`✓ Copied: public/styles/${rule.css}.css`);
+  }
+});
+
+// Common script logic
+const commonScript = `    // Configuration cache
+    let DOMAIN_CONFIG = null;
+    let CSS_CACHE = {};
+
+    // Get current domain
+    function getCurrentDomain() {
+        return window.location.hostname;
     }
 
-    styleNames.forEach((styleName) => {
-        const styleFilePath = path.join(stylesDir, `${styleName}.css`);
-        
-        if (fs.existsSync(styleFilePath)) {
-            const cssContent = fs.readFileSync(styleFilePath, 'utf8');
-            fs.writeFileSync(path.join(distStylesDir, `${styleName}.css`), cssContent);
+    // Check if domain matches any rule (exact match only)
+    function getMatchingDomain() {
+        if (!DOMAIN_CONFIG || !DOMAIN_CONFIG.rules) return null;
+
+        const currentDomain = getCurrentDomain();
+
+        for (const rule of DOMAIN_CONFIG.rules) {
+            if (!rule.css || !rule.domains) continue;
+
+            // Exact match with domains in config
+            if (rule.domains.includes(currentDomain)) {
+                return rule.css;
+            }
         }
-    });
 
-    console.log('Successfully built CSS bundles.');
-}
-
-function build() {
-    if (!fs.existsSync(distDir)) {
-        fs.mkdirSync(distDir);
+        return null;
     }
 
-    const version = getVersion();
-    const { matchPatterns, styleNames } = processRules();
-
-    buildCss(styleNames);
-
-    function generateResourceDeclarations(styleNames) {
-        return styleNames.map(name => {
-            const cssUrl = `${repoBaseUrl}/dist/styles/${name}.css`;
-            return `// @resource      css_${name} ${cssUrl}`;
-        }).join('\n');
+    // Apply CSS
+    function applyStyles(css) {
+        if (css) {
+            if (typeof GM_addStyle !== 'undefined') {
+                GM_addStyle(css);
+            } else if (typeof document !== 'undefined') {
+                const style = document.createElement('style');
+                style.textContent = css;
+                (document.head || document.documentElement).appendChild(style);
+            }
+        }
     }
-    
-    const resourceDeclarations = generateResourceDeclarations(styleNames);
-    const fullCoreJs = fs.readFileSync(path.join(srcDir, 'core.js'), 'utf8');
-    
-    const tampermonkeyMatch = fullCoreJs.match(/function tampermonkeyCore\(\) \{[\s\S]*?\n\}/);
-    const tampermonkeyCoreJs = tampermonkeyMatch ? `(${tampermonkeyMatch[0]});\n\ntampermonkeyCore();` : '';
-    
-    const userscriptsMatch = fullCoreJs.match(/function userscriptsCore\(.*?\) \{[\s\S]*?\n\}/);
-    const userscriptsFunc = userscriptsMatch ? userscriptsMatch[0] : '';
-    
-    const cssBaseUrl = `${repoBaseUrl}/dist/styles/`;
-    const userscriptsCoreJs = `(${userscriptsFunc});\n\nuserscriptsCore(${JSON.stringify(cssBaseUrl)});`;
 
-    const matchPatternStr = matchPatterns.join('\n// @match         ');
+    // Initialize
+    function init() {
+        loadConfig(function() {
+            const cssName = getMatchingDomain();
+            if (cssName) {
+                loadCSS(cssName, function(css) {
+                    if (css) {
+                        applyStyles(css);
+                    }
+                });
+            }
+        });
+    }
 
-    // --- Build Tampermonkey Script ---
-    const tampermonkeyDownloadUrl = `${repoBaseUrl}/dist/tampermonkey.js`;
-    const tampermonkeyUpdateUrl = `${repoBaseUrl}/dist/tampermonkey.meta.js`;
+    // Run at document-start
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 
-    const tampermonkeyHeader = fs.readFileSync(path.join(templatesDir, 'tampermonkey.headers'), 'utf8')
-        .replace(/__VERSION__/g, version)
-        .replace('__MATCH_PATTERNS__', matchPatternStr)
-        .replace('__DOWNLOAD_URL__', tampermonkeyDownloadUrl)
-        .replace('__UPDATE_URL__', tampermonkeyUpdateUrl)
-        .replace('__RESOURCE_DECLARATIONS__', resourceDeclarations);
+    // Also run immediately for document-start
+    init();`;
 
-    fs.writeFileSync(path.join(distDir, 'tampermonkey.meta.js'), tampermonkeyHeader);
-    console.log('Successfully built tampermonkey.meta.js');
-    
-    const tampermonkeyScript = `${tampermonkeyHeader}\n\n${tampermonkeyCoreJs}`;
-    fs.writeFileSync(path.join(distDir, 'tampermonkey.js'), tampermonkeyScript);
-    console.log('Successfully built tampermonkey.js');
+// Tampermonkey specific: use GM_xmlhttpRequest
+const tampermonkeySpecific = `    // Script base URL
+    const SCRIPT_BASE_URL = (() => {
+        const script = document.currentScript || (function() {
+            const scripts = document.getElementsByTagName('script');
+            return scripts[scripts.length - 1];
+        })();
+        if (script && script.src) {
+            return script.src.substring(0, script.src.lastIndexOf('/'));
+        }
+        return '';
+    })();
 
-    // --- Build Userscripts Script ---
-    const userscriptsDownloadUrl = `${repoBaseUrl}/dist/userscripts.js`;
-    const userscriptsUpdateUrl = `${repoBaseUrl}/dist/userscripts.meta.js`;
+    // Load configuration via JSONP with GM_xmlhttpRequest
+    function loadConfig(callback) {
+        if (DOMAIN_CONFIG) {
+            callback(DOMAIN_CONFIG);
+            return;
+        }
 
-    const userscriptsHeader = fs.readFileSync(path.join(templatesDir, 'userscripts.headers'), 'utf8')
-        .replace(/__VERSION__/g, version)
-        .replace('__MATCH_PATTERNS__', matchPatternStr)
-        .replace('__DOWNLOAD_URL__', userscriptsDownloadUrl)
-        .replace('__UPDATE_URL__', userscriptsUpdateUrl);
+        const configUrl = SCRIPT_BASE_URL + '/domain.jsonp';
+        const callbackName = 'domainConfig';
 
-    fs.writeFileSync(path.join(distDir, 'userscripts.meta.js'), userscriptsHeader);
-    console.log('Successfully built userscripts.meta.js');
+        window[callbackName] = function(data) {
+            DOMAIN_CONFIG = data;
+            delete window[callbackName];
+            callback(DOMAIN_CONFIG);
+        };
 
-    const userscriptsScript = `${userscriptsHeader}\n\n${userscriptsCoreJs}`;
-    fs.writeFileSync(path.join(distDir, 'userscripts.js'), userscriptsScript);
-    console.log('Successfully built userscripts.js');
-}
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: configUrl,
+            onload: function(response) {
+                try {
+                    const script = document.createElement('script');
+                    script.textContent = response.responseText;
+                    (document.head || document.documentElement).appendChild(script);
+                    script.remove();
+                } catch (e) {
+                    console.error('Failed to parse JSONP:', e);
+                    callback({});
+                }
+            },
+            onerror: function() {
+                console.error('Failed to load config:', configUrl);
+                callback({});
+            }
+        });
+    }
 
-if (require.main === module) {
-    build();
-}
+    // Load CSS via GM_xmlhttpRequest
+    function loadCSS(cssName, callback) {
+        if (CSS_CACHE[cssName]) {
+            callback(CSS_CACHE[cssName]);
+            return;
+        }
+
+        const cssUrl = SCRIPT_BASE_URL + '/styles/' + cssName + '.css';
+
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: cssUrl,
+            onload: function(response) {
+                CSS_CACHE[cssName] = response.responseText;
+                callback(response.responseText);
+            },
+            onerror: function() {
+                console.error('Failed to load CSS:', cssUrl);
+                callback(null);
+            }
+        });
+    }`;
+
+// Userscripts (Safari) specific: use fetch and script tag
+const userscriptsSpecific = `    // Script base URL
+    const SCRIPT_BASE_URL = (() => {
+        const script = document.currentScript || (function() {
+            const scripts = document.getElementsByTagName('script');
+            return scripts[scripts.length - 1];
+        })();
+        if (script && script.src) {
+            return script.src.substring(0, script.src.lastIndexOf('/'));
+        }
+        return '';
+    })();
+
+    // Load configuration via fetch
+    function loadConfig(callback) {
+        if (DOMAIN_CONFIG) {
+            callback(DOMAIN_CONFIG);
+            return;
+        }
+
+        const configUrl = SCRIPT_BASE_URL + '/domain.jsonp';
+
+        fetch(configUrl)
+            .then(response => response.text())
+            .then(text => {
+                // Parse JSONP: domainConfig({...})
+                const match = text.match(/^\\s*domainConfig\\((.*)\\);?\\s*$/);
+                if (match) {
+                    DOMAIN_CONFIG = JSON.parse(match[1]);
+                    callback(DOMAIN_CONFIG);
+                } else {
+                    console.error('Invalid JSONP format');
+                    callback({});
+                }
+            })
+            .catch(error => {
+                console.error('Failed to load config:', configUrl, error);
+                callback({});
+            });
+    }
+
+    // Load CSS via fetch
+    function loadCSS(cssName, callback) {
+        if (CSS_CACHE[cssName]) {
+            callback(CSS_CACHE[cssName]);
+            return;
+        }
+
+        const cssUrl = SCRIPT_BASE_URL + '/styles/' + cssName + '.css';
+
+        fetch(cssUrl)
+            .then(response => response.text())
+            .then(text => {
+                CSS_CACHE[cssName] = text;
+                callback(text);
+            })
+            .catch(error => {
+                console.error('Failed to load CSS:', cssUrl, error);
+                callback(null);
+            });
+    }`;
+
+// Generate Tampermonkey script
+const tampermonkeyHeader = `// ==UserScript==
+// @name         Custom Web Styler
+// @namespace    http://tampermonkey.net/
+// @version      ${versionConfig.version}
+// @description  Apply custom CSS styles to various websites
+// @author       flinhong
+// @match        *://*/*
+// @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
+// @connect      *
+// @run-at       document-start
+// @license      MIT
+// ==/UserScript==
+(function() {
+    'use strict';
+
+${tampermonkeySpecific}
+${commonScript}
+})();`;
+
+// Generate Userscripts (Safari) script
+const userscriptsHeader = `// ==UserScript==
+// @name         Custom Web Styler
+// @namespace    https://github.com/flinhong/userscripts
+// @version      ${versionConfig.version}
+// @description  Apply custom CSS styles to various websites
+// @author       flinhong
+// @match        *://*/*
+// @grant        GM_addStyle
+// @run-at       document-start
+// @license      MIT
+// ==/UserScript==
+(function() {
+    'use strict';
+
+${userscriptsSpecific}
+${commonScript}
+})();`;
+
+// Write Tampermonkey script
+fs.writeFileSync(
+  path.join(publicDir, 'tampermonkey.js'),
+  tampermonkeyHeader
+);
+
+// Write Userscripts (Safari) script
+fs.writeFileSync(
+  path.join(publicDir, 'userscripts.js'),
+  userscriptsHeader
+);
+
+console.log('✓ Build completed successfully!');
+console.log('✓ Generated: public/tampermonkey.js');
+console.log('✓ Generated: public/userscripts.js');
+console.log('');
+console.log('Differences:');
+console.log('  - Tampermonkey: GM_xmlhttpRequest for config and CSS');
+console.log('  - Userscripts: fetch API for config and CSS');
+console.log('');
+console.log('Add new website:');
+console.log('  1. Edit configs/domain.json');
+console.log('  2. Create configs/styles/{newcss}.css');
+console.log('  3. Run: npm run build');
