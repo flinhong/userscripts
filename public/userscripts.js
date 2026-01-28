@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Web Styler
 // @namespace    https://github.com/flinhong/userscripts
-// @version      1.0.2
+// @version      1.0.4
 // @description  Apply custom CSS styles to various websites
 // @author       flinhong
 // @match        *://*/*
@@ -34,7 +34,12 @@
         const configUrl = SCRIPT_BASE_URL + '/domain.jsonp';
 
         fetch(configUrl)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! Status: ' + response.status);
+                }
+                return response.text();
+            })
             .then(text => {
                 // Parse JSONP: domainConfig({...})
                 const match = text.match(/^\s*domainConfig\((.*)\);?\s*$/);
@@ -42,12 +47,12 @@
                     DOMAIN_CONFIG = JSON.parse(match[1]);
                     callback(DOMAIN_CONFIG);
                 } else {
-                    console.error('Invalid JSONP format');
+                    console.error('Custom Web Styler: Invalid JSONP format');
                     callback({});
                 }
             })
             .catch(error => {
-                console.error('Failed to load config:', configUrl, error);
+                console.error('Custom Web Styler: Failed to load config', { url: configUrl, error: error });
                 callback({});
             });
     }
@@ -62,13 +67,18 @@
         const cssUrl = SCRIPT_BASE_URL + '/styles/' + cssName + '.css';
 
         fetch(cssUrl)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! Status: ' + response.status);
+                }
+                return response.text();
+            })
             .then(text => {
                 CSS_CACHE[cssName] = text;
                 callback(text);
             })
             .catch(error => {
-                console.error('Failed to load CSS:', cssUrl, error);
+                console.error('Custom Web Styler: Failed to load CSS', { url: cssUrl, error: error });
                 callback(null);
             });
     }

@@ -1,42 +1,47 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
-const projectRoot = path.resolve(__dirname, '..');
-const domainConfig = JSON.parse(fs.readFileSync(path.join(projectRoot, 'configs/domain.json'), 'utf8'));
-const versionConfig = JSON.parse(fs.readFileSync(path.join(projectRoot, 'configs/version.json'), 'utf8'));
+const projectRoot = path.resolve(__dirname, '..')
+const domainConfig = JSON.parse(
+  fs.readFileSync(path.join(projectRoot, 'configs/domain.json'), 'utf8'),
+)
+const versionConfig = JSON.parse(
+  fs.readFileSync(path.join(projectRoot, 'configs/version.json'), 'utf8'),
+)
 
 // Create public directory if it doesn't exist
-const publicDir = path.join(projectRoot, 'public');
+const publicDir = path.join(projectRoot, 'public')
 if (!fs.existsSync(publicDir)) {
-  fs.mkdirSync(publicDir, { recursive: true });
+  fs.mkdirSync(publicDir, { recursive: true })
 }
 
 // Generate JSONP callback data from domain.json
-const jsonpData = JSON.stringify({ rules: domainConfig.rules });
-const jsonpCallback = 'domainConfig';
-const jsonpContent = `${jsonpCallback}(${jsonpData});`;
+const jsonpData = JSON.stringify({ rules: domainConfig.rules })
+const jsonpCallback = 'domainConfig'
+const jsonpContent = `${jsonpCallback}(${jsonpData});`
 
 // Write JSONP file
-fs.writeFileSync(
-  path.join(publicDir, 'domain.jsonp'),
-  jsonpContent
-);
-console.log('✓ Generated: public/domain.jsonp');
+fs.writeFileSync(path.join(publicDir, 'domain.jsonp'), jsonpContent)
+console.log('✓ Generated: public/domain.jsonp')
 
 // Copy styles to public directory
-const publicStylesDir = path.join(publicDir, 'styles');
+const publicStylesDir = path.join(publicDir, 'styles')
 if (!fs.existsSync(publicStylesDir)) {
-  fs.mkdirSync(publicStylesDir, { recursive: true });
+  fs.mkdirSync(publicStylesDir, { recursive: true })
 }
 
 domainConfig.rules.forEach(rule => {
-  const sourceCssPath = path.join(projectRoot, 'configs/styles', `${rule.css}.css`);
-  const targetCssPath = path.join(publicStylesDir, `${rule.css}.css`);
+  const sourceCssPath = path.join(
+    projectRoot,
+    'configs/styles',
+    `${rule.css}.css`,
+  )
+  const targetCssPath = path.join(publicStylesDir, `${rule.css}.css`)
   if (fs.existsSync(sourceCssPath)) {
-    fs.copyFileSync(sourceCssPath, targetCssPath);
-    console.log(`✓ Copied: public/styles/${rule.css}.css`);
+    fs.copyFileSync(sourceCssPath, targetCssPath)
+    console.log(`✓ Copied: public/styles/${rule.css}.css`)
   }
-});
+})
 
 // Common script logic
 const commonScript = `    // Configuration cache
@@ -101,7 +106,7 @@ const commonScript = `    // Configuration cache
     }
 
     // Also run immediately for document-start
-    init();`;
+    init();`
 
 // Tampermonkey specific: use GM_xmlhttpRequest
 const tampermonkeySpecific = `    // Script base URL
@@ -136,18 +141,27 @@ const tampermonkeySpecific = `    // Script base URL
             method: 'GET',
             url: configUrl,
             onload: function(response) {
-                try {
-                    const script = document.createElement('script');
-                    script.textContent = response.responseText;
-                    (document.head || document.documentElement).appendChild(script);
-                    script.remove();
-                } catch (e) {
-                    console.error('Failed to parse JSONP:', e);
+                if (response.status >= 200 && response.status < 300) {
+                    try {
+                        const script = document.createElement('script');
+                        script.textContent = response.responseText;
+                        (document.head || document.documentElement).appendChild(script);
+                        script.remove();
+                    } catch (e) {
+                        console.error('Custom Web Styler: Failed to parse JSONP response.', e);
+                        callback({});
+                    }
+                } else {
+                    console.error('Custom Web Styler: Failed to load config. Status: ' + response.status, configUrl);
                     callback({});
                 }
             },
-            onerror: function() {
-                console.error('Failed to load config:', configUrl);
+            onerror: function(response) {
+                console.error('Custom Web Styler: Failed to load config due to a network error.', response);
+                callback({});
+            },
+            ontimeout: function() {
+                console.error('Custom Web Styler: Failed to load config due to a timeout.', configUrl);
                 callback({});
             }
         });
@@ -166,15 +180,24 @@ const tampermonkeySpecific = `    // Script base URL
             method: 'GET',
             url: cssUrl,
             onload: function(response) {
-                CSS_CACHE[cssName] = response.responseText;
-                callback(response.responseText);
+                if (response.status >= 200 && response.status < 300) {
+                    CSS_CACHE[cssName] = response.responseText;
+                    callback(response.responseText);
+                } else {
+                    console.error('Custom Web Styler: Failed to load CSS. Status: ' + response.status, cssUrl);
+                    callback(null);
+                }
             },
-            onerror: function() {
-                console.error('Failed to load CSS:', cssUrl);
+            onerror: function(response) {
+                console.error('Custom Web Styler: Failed to load CSS due to a network error.', response);
+                callback(null);
+            },
+            ontimeout: function() {
+                console.error('Custom Web Styler: Failed to load CSS due to a timeout.', cssUrl);
                 callback(null);
             }
         });
-    }`;
+    }`
 
 // Userscripts (Safari) specific: use fetch and script tag
 const userscriptsSpecific = `    // Script base URL
@@ -199,7 +222,12 @@ const userscriptsSpecific = `    // Script base URL
         const configUrl = SCRIPT_BASE_URL + '/domain.jsonp';
 
         fetch(configUrl)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! Status: ' + response.status);
+                }
+                return response.text();
+            })
             .then(text => {
                 // Parse JSONP: domainConfig({...})
                 const match = text.match(/^\\s*domainConfig\\((.*)\\);?\\s*$/);
@@ -207,12 +235,12 @@ const userscriptsSpecific = `    // Script base URL
                     DOMAIN_CONFIG = JSON.parse(match[1]);
                     callback(DOMAIN_CONFIG);
                 } else {
-                    console.error('Invalid JSONP format');
+                    console.error('Custom Web Styler: Invalid JSONP format');
                     callback({});
                 }
             })
             .catch(error => {
-                console.error('Failed to load config:', configUrl, error);
+                console.error('Custom Web Styler: Failed to load config', { url: configUrl, error: error });
                 callback({});
             });
     }
@@ -227,16 +255,21 @@ const userscriptsSpecific = `    // Script base URL
         const cssUrl = SCRIPT_BASE_URL + '/styles/' + cssName + '.css';
 
         fetch(cssUrl)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error! Status: ' + response.status);
+                }
+                return response.text();
+            })
             .then(text => {
                 CSS_CACHE[cssName] = text;
                 callback(text);
             })
             .catch(error => {
-                console.error('Failed to load CSS:', cssUrl, error);
+                console.error('Custom Web Styler: Failed to load CSS', { url: cssUrl, error: error });
                 callback(null);
             });
-    }`;
+    }`
 
 // Generate Tampermonkey script
 const tampermonkeyHeader = `// ==UserScript==
@@ -257,7 +290,7 @@ const tampermonkeyHeader = `// ==UserScript==
 
 ${tampermonkeySpecific}
 ${commonScript}
-})();`;
+})();`
 
 // Generate Userscripts (Safari) script
 const userscriptsHeader = `// ==UserScript==
@@ -276,29 +309,23 @@ const userscriptsHeader = `// ==UserScript==
 
 ${userscriptsSpecific}
 ${commonScript}
-})();`;
+})();`
 
 // Write Tampermonkey script
-fs.writeFileSync(
-  path.join(publicDir, 'tampermonkey.js'),
-  tampermonkeyHeader
-);
+fs.writeFileSync(path.join(publicDir, 'tampermonkey.js'), tampermonkeyHeader)
 
 // Write Userscripts (Safari) script
-fs.writeFileSync(
-  path.join(publicDir, 'userscripts.js'),
-  userscriptsHeader
-);
+fs.writeFileSync(path.join(publicDir, 'userscripts.js'), userscriptsHeader)
 
-console.log('✓ Build completed successfully!');
-console.log('✓ Generated: public/tampermonkey.js');
-console.log('✓ Generated: public/userscripts.js');
-console.log('');
-console.log('Differences:');
-console.log('  - Tampermonkey: GM_xmlhttpRequest for config and CSS');
-console.log('  - Userscripts: fetch API for config and CSS');
-console.log('');
-console.log('Add new website:');
-console.log('  1. Edit configs/domain.json');
-console.log('  2. Create configs/styles/{newcss}.css');
-console.log('  3. Run: npm run build');
+console.log('✓ Build completed successfully!')
+console.log('✓ Generated: public/tampermonkey.js')
+console.log('✓ Generated: public/userscripts.js')
+console.log('')
+console.log('Differences:')
+console.log('  - Tampermonkey: GM_xmlhttpRequest for config and CSS')
+console.log('  - Userscripts: fetch API for config and CSS')
+console.log('')
+console.log('Add new website:')
+console.log('  1. Edit configs/domain.json')
+console.log('  2. Create configs/styles/{newcss}.css')
+console.log('  3. Run: npm run build')

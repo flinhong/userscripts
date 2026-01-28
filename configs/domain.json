@@ -1,6 +1,10 @@
 {
   "rules": [
     {
+      "css": "baidu",
+      "domains": ["baidu.com", "www.baidu.com"]
+    },
+    {
       "css": "github",
       "domains": ["github.com"]
     },

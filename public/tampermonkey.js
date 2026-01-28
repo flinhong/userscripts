@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Web Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.4
 // @description  Apply custom CSS styles to various websites
 // @author       flinhong
 // @match        *://*/*
@@ -46,18 +46,27 @@
             method: 'GET',
             url: configUrl,
             onload: function(response) {
-                try {
-                    const script = document.createElement('script');
-                    script.textContent = response.responseText;
-                    (document.head || document.documentElement).appendChild(script);
-                    script.remove();
-                } catch (e) {
-                    console.error('Failed to parse JSONP:', e);
+                if (response.status >= 200 && response.status < 300) {
+                    try {
+                        const script = document.createElement('script');
+                        script.textContent = response.responseText;
+                        (document.head || document.documentElement).appendChild(script);
+                        script.remove();
+                    } catch (e) {
+                        console.error('Custom Web Styler: Failed to parse JSONP response.', e);
+                        callback({});
+                    }
+                } else {
+                    console.error('Custom Web Styler: Failed to load config. Status: ' + response.status, configUrl);
                     callback({});
                 }
             },
-            onerror: function() {
-                console.error('Failed to load config:', configUrl);
+            onerror: function(response) {
+                console.error('Custom Web Styler: Failed to load config due to a network error.', response);
+                callback({});
+            },
+            ontimeout: function() {
+                console.error('Custom Web Styler: Failed to load config due to a timeout.', configUrl);
                 callback({});
             }
         });
@@ -76,11 +85,20 @@
             method: 'GET',
             url: cssUrl,
             onload: function(response) {
-                CSS_CACHE[cssName] = response.responseText;
-                callback(response.responseText);
+                if (response.status >= 200 && response.status < 300) {
+                    CSS_CACHE[cssName] = response.responseText;
+                    callback(response.responseText);
+                } else {
+                    console.error('Custom Web Styler: Failed to load CSS. Status: ' + response.status, cssUrl);
+                    callback(null);
+                }
             },
-            onerror: function() {
-                console.error('Failed to load CSS:', cssUrl);
+            onerror: function(response) {
+                console.error('Custom Web Styler: Failed to load CSS due to a network error.', response);
+                callback(null);
+            },
+            ontimeout: function() {
+                console.error('Custom Web Styler: Failed to load CSS due to a timeout.', cssUrl);
                 callback(null);
             }
         });
