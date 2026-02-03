@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
 // @supportURL   https://github.com/flinhong/userscripts/issues
-// @updateURL    https://cdn.jsdelivr.net/gh/flinhong/userscripts/public/tampermonkey.js
-// @downloadURL  https://cdn.jsdelivr.net/gh/flinhong/userscripts/public/tampermonkey.js
+// @updateURL    https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/tampermonkey.js
+// @downloadURL  https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/tampermonkey.js
 // @match        *://news.baidu.com/*
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
@@ -28,8 +28,8 @@
     'use strict';
 
     let domainConfig = null;
-    const configUrl = 'https://cdn.jsdelivr.net/gh/flinhong/userscripts/public/domain.jsonp';
-    const cssBaseUrl = 'https://cdn.jsdelivr.net/gh/flinhong/userscripts/configs/styles';
+    const configUrl = 'https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/domain.jsonp';
+    const cssBaseUrl = 'https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/configs/styles';
 
     // JSONP callback function
     window.domainConfig = function(config) {
