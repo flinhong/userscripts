@@ -16,7 +16,7 @@ const version = versionConfig.version
 const repoOwner = 'flinhong'
 const repoName = 'userscripts'
 const cdnBase =
-  'https://cdn.honglin.ac.cn/statically/gh/' + repoOwner + '/' + repoName
+  'https://cdn.frankindev.com/statically/gh/' + repoOwner + '/' + repoName
 const cssBaseUrl = cdnBase + '/configs/styles'
 
 // Ensure public directory exists
@@ -130,13 +130,16 @@ userScriptBody += '        }\n'
 userScriptBody += '    }\n\n'
 userScriptBody += '    // Load config via GM_xmlhttpRequest (supports CORS)\n'
 userScriptBody += '    function loadConfig() {\n'
-userScriptBody += "        console.log('[Custom Font Styler] Fetching config:', configUrl);\n"
+userScriptBody +=
+  "        console.log('[Custom Font Styler] Fetching config:', configUrl);\n"
 userScriptBody += '        GM_xmlhttpRequest({\n'
 userScriptBody += "            method: 'GET',\n"
 userScriptBody += '            url: configUrl,\n'
 userScriptBody += '            onload: function(response) {\n'
-userScriptBody += "                console.log('[Custom Font Styler] Response status:', response.status);\n"
-userScriptBody += "                console.log('[Custom Font Styler] Response length:', response.responseText?.length || 0);\n"
+userScriptBody +=
+  "                console.log('[Custom Font Styler] Response status:', response.status);\n"
+userScriptBody +=
+  "                console.log('[Custom Font Styler] Response length:', response.responseText?.length || 0);\n"
 userScriptBody += '                if (response.status !== 200) {\n'
 userScriptBody +=
   "                    console.error('[Custom Font Styler] HTTP error:', response.status, response.statusText);\n"
