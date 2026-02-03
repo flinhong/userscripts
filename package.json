@@ -1,18 +1,15 @@
 {
   "name": "userscripts",
-  "version": "1.0.5",
+  "version": "1.0.1",
   "description": "userscripts for styling web with custom fonts",
   "main": "src/main.js",
   "scripts": {
     "clean": "rm -rf public",
     "build": "npm run clean && node scripts/build.js",
-    "lint": "eslint . --config eslint.config.mjs",
-    "lint:fix": "eslint . --config eslint.config.mjs --fix",
     "release": "node scripts/release.js bump patch",
     "release:minor": "node scripts/release.js bump minor",
     "release:major": "node scripts/release.js bump major",
-    "release:dryrun": "node scripts/release.js bump patch --dryrun",
-    "version:reset": "node scripts/release.js reset"
+    "release:dryrun": "node scripts/release.js bump patch --dryrun"
   },
   "repository": {
     "type": "git",
@@ -27,9 +24,6 @@
   },
   "homepage": "https://github.com/flinhong/userscripts#readme",
   "devDependencies": {
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
     "prettier": "^3.8.1",
     "semver": "^7.7.3"
   }

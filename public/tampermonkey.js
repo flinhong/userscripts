@@ -1,169 +1,113 @@
 // ==UserScript==
-// @name         Custom Web Styler
+// @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.5
-// @description  Apply custom CSS styles to various websites
+// @version      1.0.1
+// @description  Apply custom fonts and styles to various websites
 // @author       flinhong
-// @match        *://*/*
-// @grant        GM_addStyle
+// @homepage     https://github.com/flinhong/userscripts
+// @supportURL   https://github.com/flinhong/userscripts/issues
+// @updateURL    https://cdn.jsdelivr.net/gh/flinhong/userscripts/public/tampermonkey.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/flinhong/userscripts/public/tampermonkey.js
+// @match        *://news.baidu.com/*
+// @match        *://baidu.com/*
+// @match        *://www.baidu.com/*
+// @match        *://github.com/*
+// @match        *://bing.com/*
+// @match        *://*.bing.com/*
+// @match        *://google.com/*
+// @match        *://www.google.com/*
+// @match        *://www.google.co.uk/*
+// @match        *://www.google.com.hk/*
+// @match        *://chatgpt.com/*
 // @grant        GM_xmlhttpRequest
-// @connect      *
+// @grant        GM_addStyle
 // @run-at       document-start
-// @license      MIT
 // ==/UserScript==
+
 (function() {
     'use strict';
 
-    // Script base URL
-    const SCRIPT_BASE_URL = (() => {
-        const script = document.currentScript || (function() {
-            const scripts = document.getElementsByTagName('script');
-            return scripts[scripts.length - 1];
-        })();
-        if (script && script.src) {
-            return script.src.substring(0, script.src.lastIndexOf('/'));
+    let domainConfig = null;
+    const configUrl = 'https://cdn.jsdelivr.net/gh/flinhong/userscripts/public/domain.jsonp';
+    const cssBaseUrl = 'https://cdn.jsdelivr.net/gh/flinhong/userscripts/configs/styles';
+
+    // JSONP callback function
+    window.domainConfig = function(config) {
+        domainConfig = config;
+        console.log('[Custom Font Styler] Config loaded:', config.rules.length, 'rules');
+        console.log('[Custom Font Styler] Current hostname:', window.location.hostname);
+        applyStylesheet();
+    };
+
+    // Convert @match pattern to regex
+    function matchPatternToRegex(pattern) {
+        let regex = '^' + pattern
+            .replace(/\*/g, '.*')
+            .replace(/\./g, '\\.');
+        return new RegExp(regex);
+    }
+
+    // Get matching CSS file for current URL
+    function getMatchingStylesheet() {
+        if (!domainConfig || !domainConfig.rules) return null;
+
+        const fullUrl = window.location.href;
+
+        for (const rule of domainConfig.rules) {
+            const patterns = rule.domains || rule.match || [];
+            for (const pattern of patterns) {
+                const regex = matchPatternToRegex(pattern);
+                if (regex.test(fullUrl)) {
+                    return rule.file;
+                }
+            }
         }
-        return '';
-    })();
+        return null;
+    }
 
-    // Load configuration via JSONP with GM_xmlhttpRequest
-    function loadConfig(callback) {
-        if (DOMAIN_CONFIG) {
-            callback(DOMAIN_CONFIG);
-            return;
+    // Apply stylesheet
+    function applyStylesheet() {
+        const cssFile = getMatchingStylesheet();
+        if (!cssFile) return;
+
+        const cssUrl = cssBaseUrl + '/' + cssFile;
+
+        if (typeof GM_addStyle !== 'undefined') {
+            fetch(cssUrl)
+                .then(response => response.text())
+                .then(css => {
+                    GM_addStyle(css);
+                    console.log('[Custom Font Styler] Loaded:', cssFile, 'for', window.location.hostname);
+                })
+                .catch(err => {
+                    console.error('[Custom Font Styler] Failed to load:', err);
+                });
+        } else {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = cssUrl;
+            (document.head || document.documentElement).appendChild(link);
         }
+    }
 
-        const configUrl = SCRIPT_BASE_URL + '/domain.jsonp';
-        const callbackName = 'domainConfig';
-
-        window[callbackName] = function(data) {
-            DOMAIN_CONFIG = data;
-            delete window[callbackName];
-            callback(DOMAIN_CONFIG);
-        };
-
+    // Load config via GM_xmlhttpRequest (supports CORS)
+    function loadConfig() {
         GM_xmlhttpRequest({
             method: 'GET',
             url: configUrl,
             onload: function(response) {
-                if (response.status >= 200 && response.status < 300) {
-                    try {
-                        const script = document.createElement('script');
-                        script.textContent = response.responseText;
-                        (document.head || document.documentElement).appendChild(script);
-                        script.remove();
-                    } catch (e) {
-                        console.error('Custom Web Styler: Failed to parse JSONP response.', e);
-                        callback({});
-                    }
-                } else {
-                    console.error('Custom Web Styler: Failed to load config. Status: ' + response.status, configUrl);
-                    callback({});
+                try {
+                    eval(response.responseText);
+                } catch (e) {
+                    console.error('[Custom Font Styler] Failed to load config:', e);
                 }
             },
-            onerror: function(response) {
-                console.error('Custom Web Styler: Failed to load config due to a network error.', response);
-                callback({});
-            },
-            ontimeout: function() {
-                console.error('Custom Web Styler: Failed to load config due to a timeout.', configUrl);
-                callback({});
+            onerror: function() {
+                console.error('[Custom Font Styler] Failed to fetch config');
             }
         });
-    }
-
-    // Load CSS via GM_xmlhttpRequest
-    function loadCSS(cssName, callback) {
-        if (CSS_CACHE[cssName]) {
-            callback(CSS_CACHE[cssName]);
-            return;
-        }
-
-        const cssUrl = SCRIPT_BASE_URL + '/styles/' + cssName + '.css';
-
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: cssUrl,
-            onload: function(response) {
-                if (response.status >= 200 && response.status < 300) {
-                    CSS_CACHE[cssName] = response.responseText;
-                    callback(response.responseText);
-                } else {
-                    console.error('Custom Web Styler: Failed to load CSS. Status: ' + response.status, cssUrl);
-                    callback(null);
-                }
-            },
-            onerror: function(response) {
-                console.error('Custom Web Styler: Failed to load CSS due to a network error.', response);
-                callback(null);
-            },
-            ontimeout: function() {
-                console.error('Custom Web Styler: Failed to load CSS due to a timeout.', cssUrl);
-                callback(null);
-            }
-        });
-    }
-    // Configuration cache
-    let DOMAIN_CONFIG = null;
-    let CSS_CACHE = {};
-
-    // Get current domain
-    function getCurrentDomain() {
-        return window.location.hostname;
-    }
-
-    // Check if domain matches any rule (exact match only)
-    function getMatchingDomain() {
-        if (!DOMAIN_CONFIG || !DOMAIN_CONFIG.rules) return null;
-
-        const currentDomain = getCurrentDomain();
-
-        for (const rule of DOMAIN_CONFIG.rules) {
-            if (!rule.css || !rule.domains) continue;
-
-            // Exact match with domains in config
-            if (rule.domains.includes(currentDomain)) {
-                return rule.css;
-            }
-        }
-
-        return null;
-    }
-
-    // Apply CSS
-    function applyStyles(css) {
-        if (css) {
-            if (typeof GM_addStyle !== 'undefined') {
-                GM_addStyle(css);
-            } else if (typeof document !== 'undefined') {
-                const style = document.createElement('style');
-                style.textContent = css;
-                (document.head || document.documentElement).appendChild(style);
-            }
-        }
     }
 
     // Initialize
-    function init() {
-        loadConfig(function() {
-            const cssName = getMatchingDomain();
-            if (cssName) {
-                loadCSS(cssName, function(css) {
-                    if (css) {
-                        applyStyles(css);
-                    }
-                });
-            }
-        });
-    }
-
-    // Run at document-start
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-
-    // Also run immediately for document-start
-    init();
+    loadConfig();
 })();

@@ -1,1 +1,45 @@
-domainConfig({"rules":[{"css":"baidu","domains":["baidu.com","www.baidu.com"]},{"css":"github","domains":["github.com"]},{"css":"bing","domains":["bing.com","www.bing.com","cn.bing.com"]},{"css":"google","domains":["google.com","www.google.com","www.google.co.uk","www.google.com.hk"]},{"css":"chatgpt","domains":["chatgpt.com"]}]});
+domainConfig({
+  "rules": [
+    {
+      "file": "news.baidu.css",
+      "domains": [
+        "*://news.baidu.com/*"
+      ]
+    },
+    {
+      "file": "baidu.css",
+      "domains": [
+        "*://baidu.com/*",
+        "*://www.baidu.com/*"
+      ]
+    },
+    {
+      "file": "github.css",
+      "domains": [
+        "*://github.com/*"
+      ]
+    },
+    {
+      "file": "bing.css",
+      "domains": [
+        "*://bing.com/*",
+        "*://*.bing.com/*"
+      ]
+    },
+    {
+      "file": "google.css",
+      "domains": [
+        "*://google.com/*",
+        "*://www.google.com/*",
+        "*://www.google.co.uk/*",
+        "*://www.google.com.hk/*"
+      ]
+    },
+    {
+      "file": "chatgpt.css",
+      "match": [
+        "*://chatgpt.com/*"
+      ]
+    }
+  ]
+});
