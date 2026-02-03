@@ -130,20 +130,32 @@ userScriptBody += '        }\n'
 userScriptBody += '    }\n\n'
 userScriptBody += '    // Load config via GM_xmlhttpRequest (supports CORS)\n'
 userScriptBody += '    function loadConfig() {\n'
+userScriptBody += "        console.log('[Custom Font Styler] Fetching config:', configUrl);\n"
 userScriptBody += '        GM_xmlhttpRequest({\n'
 userScriptBody += "            method: 'GET',\n"
 userScriptBody += '            url: configUrl,\n'
 userScriptBody += '            onload: function(response) {\n'
+userScriptBody += "                console.log('[Custom Font Styler] Response status:', response.status);\n"
+userScriptBody += "                console.log('[Custom Font Styler] Response length:', response.responseText?.length || 0);\n"
+userScriptBody += '                if (response.status !== 200) {\n'
+userScriptBody +=
+  "                    console.error('[Custom Font Styler] HTTP error:', response.status, response.statusText);\n"
+userScriptBody +=
+  "                    console.error('[Custom Font Styler] Response:', response.responseText?.substring(0, 200) || 'empty');\n"
+userScriptBody += '                    return;\n'
+userScriptBody += '                }\n'
 userScriptBody += '                try {\n'
 userScriptBody += '                    eval(response.responseText);\n'
 userScriptBody += '                } catch (e) {\n'
 userScriptBody +=
   "                    console.error('[Custom Font Styler] Failed to load config:', e);\n"
+userScriptBody +=
+  "                    console.error('[Custom Font Styler] Response:', response.responseText?.substring(0, 200) || 'empty');\n"
 userScriptBody += '                }\n'
 userScriptBody += '            },\n'
-userScriptBody += '            onerror: function() {\n'
+userScriptBody += '            onerror: function(err) {\n'
 userScriptBody +=
-  "                console.error('[Custom Font Styler] Failed to fetch config');\n"
+  "                    console.error('[Custom Font Styler] Network error:', err);\n"
 userScriptBody += '            }\n'
 userScriptBody += '        });\n'
 userScriptBody += '    }\n\n'

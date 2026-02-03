@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -92,18 +92,27 @@
 
     // Load config via GM_xmlhttpRequest (supports CORS)
     function loadConfig() {
+        console.log('[Custom Font Styler] Fetching config:', configUrl);
         GM_xmlhttpRequest({
             method: 'GET',
             url: configUrl,
             onload: function(response) {
+                console.log('[Custom Font Styler] Response status:', response.status);
+                console.log('[Custom Font Styler] Response length:', response.responseText?.length || 0);
+                if (response.status !== 200) {
+                    console.error('[Custom Font Styler] HTTP error:', response.status, response.statusText);
+                    console.error('[Custom Font Styler] Response:', response.responseText?.substring(0, 200) || 'empty');
+                    return;
+                }
                 try {
                     eval(response.responseText);
                 } catch (e) {
                     console.error('[Custom Font Styler] Failed to load config:', e);
+                    console.error('[Custom Font Styler] Response:', response.responseText?.substring(0, 200) || 'empty');
                 }
             },
-            onerror: function() {
-                console.error('[Custom Font Styler] Failed to fetch config');
+            onerror: function(err) {
+                    console.error('[Custom Font Styler] Network error:', err);
             }
         });
     }
