@@ -12,9 +12,10 @@
   "tagPrefix": "v",
   "skip": {
     "changelog": true,
-    "tag": true
+    "tag": true,
+    "commit": true
   },
   "scripts": {
-    "postbump": "node scripts/build.js && git add package.json package-lock.json public/ && git commit -m \"chore: release $(node -p \"require('./package.json').version\")\""
+    "postbump": "node scripts/build.js && git add package.json package-lock.json public/ && git commit -m \"chore: release $(node -p \"require('./package.json').version\")\" && git tag v$(node -p \"require('./package.json').version\")"
   }
 }
