@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -9,7 +9,7 @@
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
 // @icon         https://cdn.frankindev.com/favicon.ico
-// @resource     config https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v0.1.1/public/domain.jsonp
+// @resource     config https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v0.1.2/public/domain.jsonp
 // @resource     fonts https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*

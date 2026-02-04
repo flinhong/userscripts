@@ -24,3 +24,9 @@ html {
     'IBM Plex Mono', 'Noto Serif SC', Menlo, Monaco, Consolas, 'Andale Mono',
     'lucida console', 'Courier New', monospace;
 }
+
+pre,
+code,
+.highlight pre code {
+  font-family: var(--zFontMonospace);
+}
