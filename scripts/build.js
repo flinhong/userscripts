@@ -41,18 +41,20 @@ function extractHostname(pattern) {
   return null
 }
 
-// Copy original CSS files to public/styles
+// Copy original CSS files to public/styles with version suffix
 const cssFiles = fs.readdirSync(sourceStylesDir).filter(function (file) {
   return file.endsWith('.css')
 })
 
 cssFiles.forEach(function (cssFile) {
   const sourcePath = path.join(sourceStylesDir, cssFile)
-  const targetPath = path.join(targetStylesDir, cssFile)
+  // Insert version before .css extension
+  const baseName = cssFile.replace(/\.css$/, '')
+  const targetPath = path.join(targetStylesDir, baseName + '.' + version + '.css')
   fs.copyFileSync(sourcePath, targetPath)
 })
 
-// Create domain-specific CSS copies based on domain.json rules
+// Create domain-specific CSS copies with version suffix based on domain.json rules
 domainConfig.rules.forEach(function (rule) {
   const sourceCssFile = rule.file
   const sourceCssPath = path.join(sourceStylesDir, sourceCssFile)
@@ -68,16 +70,25 @@ domainConfig.rules.forEach(function (rule) {
   domains.forEach(function (domainPattern) {
     const hostname = extractHostname(domainPattern)
     if (hostname) {
-      const domainCssFile = hostname + '.css'
+      const domainCssFile = hostname + '.' + version + '.css'
       const targetCssPath = path.join(targetStylesDir, domainCssFile)
       fs.writeFileSync(targetCssPath, cssContent)
     }
   })
 })
 
-// Generate domain.jsonp for public directory
+// Generate domain.jsonp for public directory with versioned file names
+const versionedDomainConfig = {
+  rules: domainConfig.rules.map(function (rule) {
+    const baseName = rule.file.replace(/\.css$/, '')
+    return {
+      ...rule,
+      file: baseName + '.' + version + '.css'
+    }
+  })
+}
 const domainJsonp =
-  'domainConfigCallback(' + JSON.stringify(domainConfig, null, 2) + ');'
+  'domainConfigCallback(' + JSON.stringify(versionedDomainConfig, null, 2) + ');'
 fs.writeFileSync(
   path.join(__dirname, '../public/domain.' + version + '.jsonp'),
   domainJsonp
@@ -145,7 +156,7 @@ tampermonkeyHeader +=
   '/public/domain.' +
   version +
   '.jsonp\n'
-tampermonkeyHeader += '// @resource     fonts https://cdn.honglin.ac.cn/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap\n'
+tampermonkeyHeader += '// @resource     fonts https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap\n'
 uniqueMatches.forEach(function (match) {
   tampermonkeyHeader += '// @match        ' + match + '\n'
 })
@@ -252,7 +263,7 @@ function generateBody(scriptName) {
   body += '    function loadFontsFallback() {\n'
   body += "        const link = document.createElement('link');\n"
   body += "        link.rel = 'stylesheet';\n"
-  body += "        link.href = 'https://cdn.honglin.ac.cn/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';\n"
+  body += "        link.href = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';\n"
   body += "        (document.head || document.documentElement).appendChild(link);\n"
   body += "        console.log('[CFS] Loaded fonts via link tag');\n"
   body += "    }\n\n"

@@ -45,9 +45,11 @@ versionJson.version = newVersion
 fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2) + '\n')
 console.log('✓ Updated configs/version.json')
 
-// Clean old domain.jsonp files from public directory
+// Clean old version files from public directory
 console.log('\nCleaning old version files...')
 const publicDir = path.join(__dirname, '../public')
+
+// Clean old domain.jsonp files
 if (fs.existsSync(publicDir)) {
   const files = fs.readdirSync(publicDir)
   files.forEach(function (file) {
@@ -55,6 +57,25 @@ if (fs.existsSync(publicDir)) {
       const filePath = path.join(publicDir, file)
       fs.unlinkSync(filePath)
       console.log('  Removed:', file)
+    }
+  })
+}
+
+// Clean old CSS files from public/styles directory
+const publicStylesDir = path.join(publicDir, 'styles')
+if (fs.existsSync(publicStylesDir)) {
+  const cssFiles = fs.readdirSync(publicStylesDir)
+  cssFiles.forEach(function (cssFile) {
+    // Match pattern: name.version.css (e.g., baidu.1.0.18.css)
+    const match = cssFile.match(/^(.+)\.\d+\.\d+\.\d+\.css$/)
+    if (match) {
+      const baseName = match[1]
+      const newCssFile = baseName + '.' + newVersion + '.css'
+      if (cssFile !== newCssFile) {
+        const filePath = path.join(publicStylesDir, cssFile)
+        fs.unlinkSync(filePath)
+        console.log('  Removed styles:', cssFile)
+      }
     }
   })
 }
