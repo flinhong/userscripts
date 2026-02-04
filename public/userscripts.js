@@ -12,6 +12,7 @@
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://github.com/*
+// @match        *://www.zhihu.com/*
 // @match        *://bing.com/*
 // @match        *://*.bing.com/*
 // @match        *://google.com/*

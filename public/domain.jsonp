@@ -16,6 +16,13 @@ domainConfigCallback({
       ]
     },
     {
+      "file": "zhihu.css",
+      "fonts": true,
+      "domains": [
+        "*://www.zhihu.com/*"
+      ]
+    },
+    {
       "file": "bing.css",
       "fonts": true,
       "domains": [
