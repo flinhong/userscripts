@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.1.0
+// @version      0.0.0
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -37,8 +37,8 @@
             cdnBase = updateUrlMatch[1].replace(/\/public\/userscripts\.js$/, '');
         }
     }
-    const configUrl = cdnBase + '/public/domain.' + scriptVersion + '.jsonp';
-    const cssBaseUrl = cdnBase + '/public/styles';
+    const configUrl = cdnBase + '@v' + scriptVersion + '/public/domain.jsonp';
+    const cssBaseUrl = cdnBase + '@v' + scriptVersion + '/public/styles';
 
     // JSONP callback function
     window.domainConfigCallback = function(config) {

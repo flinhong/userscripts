@@ -5,14 +5,11 @@ const path = require('path')
 const domainConfig = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../configs/domain.json'), 'utf-8'),
 )
-const versionConfig = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../configs/version.json'), 'utf-8'),
-)
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8'),
 )
 
-const version = versionConfig.version
+const version = packageJson.version
 const repoOwner = 'flinhong'
 const repoName = 'userscripts'
 const cdnBase =
@@ -41,20 +38,18 @@ function extractHostname(pattern) {
   return null
 }
 
-// Copy original CSS files to public/styles with version suffix
+// Copy original CSS files to public/styles
 const cssFiles = fs.readdirSync(sourceStylesDir).filter(function (file) {
   return file.endsWith('.css')
 })
 
 cssFiles.forEach(function (cssFile) {
   const sourcePath = path.join(sourceStylesDir, cssFile)
-  // Insert version before .css extension
-  const baseName = cssFile.replace(/\.css$/, '')
-  const targetPath = path.join(targetStylesDir, baseName + '.' + version + '.css')
+  const targetPath = path.join(targetStylesDir, cssFile)
   fs.copyFileSync(sourcePath, targetPath)
 })
 
-// Create domain-specific CSS copies with version suffix based on domain.json rules
+// Create domain-specific CSS copies based on domain.json rules
 domainConfig.rules.forEach(function (rule) {
   const sourceCssFile = rule.file
   const sourceCssPath = path.join(sourceStylesDir, sourceCssFile)
@@ -70,27 +65,18 @@ domainConfig.rules.forEach(function (rule) {
   domains.forEach(function (domainPattern) {
     const hostname = extractHostname(domainPattern)
     if (hostname) {
-      const domainCssFile = hostname + '.' + version + '.css'
+      const domainCssFile = hostname + '.css'
       const targetCssPath = path.join(targetStylesDir, domainCssFile)
       fs.writeFileSync(targetCssPath, cssContent)
     }
   })
 })
 
-// Generate domain.jsonp for public directory with versioned file names
-const versionedDomainConfig = {
-  rules: domainConfig.rules.map(function (rule) {
-    const baseName = rule.file.replace(/\.css$/, '')
-    return {
-      ...rule,
-      file: baseName + '.' + version + '.css'
-    }
-  })
-}
+// Generate domain.jsonp for public directory
 const domainJsonp =
-  'domainConfigCallback(' + JSON.stringify(versionedDomainConfig, null, 2) + ');'
+  'domainConfigCallback(' + JSON.stringify(domainConfig, null, 2) + ');'
 fs.writeFileSync(
-  path.join(__dirname, '../public/domain.' + version + '.jsonp'),
+  path.join(__dirname, '../public/domain.jsonp'),
   domainJsonp
 )
 
@@ -153,9 +139,8 @@ tampermonkeyHeader += '// @icon         https://cdn.frankindev.com/favicon.ico\n
 tampermonkeyHeader +=
   '// @resource     config ' +
   cdnBase +
-  '/public/domain.' +
-  version +
-  '.jsonp\n'
+  '@v' + version +
+  '/public/domain.jsonp\n'
 tampermonkeyHeader += '// @resource     fonts https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap\n'
 uniqueMatches.forEach(function (match) {
   tampermonkeyHeader += '// @match        ' + match + '\n'
@@ -180,8 +165,8 @@ function generateBody(scriptName) {
   body += "            cdnBase = updateUrlMatch[1].replace(/\\/public\\/" + scriptName + "\\.js$/, '');\n"
   body += "        }\n"
   body += "    }\n"
-  body += "    const configUrl = cdnBase + '/public/domain.' + scriptVersion + '.jsonp';\n"
-  body += "    const cssBaseUrl = cdnBase + '/public/styles';\n\n"
+  body += "    const configUrl = cdnBase + '@v' + scriptVersion + '/public/domain.jsonp';\n"
+  body += "    const cssBaseUrl = cdnBase + '@v' + scriptVersion + '/public/styles';\n\n"
   body += '    // JSONP callback function\n'
   body += '    window.domainConfigCallback = function(config) {\n'
   body += '        domainConfig = config;\n'
@@ -339,6 +324,6 @@ console.log('✓ Build completed!')
 console.log('  Version: ' + version)
 console.log('  Generated: public/userscripts.js')
 console.log('  Generated: public/tampermonkey.js')
-console.log('  Generated: public/domain.' + version + '.jsonp')
+console.log('  Generated: public/domain.jsonp')
 console.log('  Copied ' + cssFiles.length + ' CSS files to public/styles')
 console.log('  CDN URL: ' + cdnBase + '/public/userscripts.js')

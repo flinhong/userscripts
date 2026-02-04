@@ -1,15 +1,11 @@
 {
   "name": "userscripts",
-  "version": "1.1.0",
+  "version": "0.0.0",
   "description": "userscripts for styling web with custom fonts",
   "main": "src/main.js",
   "scripts": {
     "clean": "rm -rf public",
-    "build": "npm run clean && node scripts/build.js",
-    "release": "node scripts/release.js bump patch",
-    "release:minor": "node scripts/release.js bump minor",
-    "release:major": "node scripts/release.js bump major",
-    "release:dryrun": "node scripts/release.js bump patch --dryrun"
+    "build": "npm run clean && node scripts/build.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +20,14 @@
   },
   "homepage": "https://github.com/flinhong/userscripts#readme",
   "devDependencies": {
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.3",
+    "@semantic-release/npm": "^3.4.1",
+    "@semantic-release/release-notes-generator": "^9.0.3",
     "prettier": "^3.8.1",
-    "semver": "^7.7.3"
+    "semantic-release": "^25.0.3"
   }
 }
