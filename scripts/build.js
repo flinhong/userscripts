@@ -154,25 +154,31 @@ userScriptBody += '    // Get matching CSS file for current URL\n'
 userScriptBody += '    function getMatchingStylesheet() {\n'
 userScriptBody +=
   '        if (!domainConfig || !domainConfig.rules) return null;\n\n'
-userScriptBody += '        const fullUrl = window.location.href;\n\n'
+userScriptBody += '        const fullUrl = window.location.href;\n'
+userScriptBody += "        console.log('[CFS] Checking URL:', fullUrl);\n\n"
 userScriptBody += '        for (const rule of domainConfig.rules) {\n'
 userScriptBody +=
   '            const patterns = rule.domains || rule.match || [];\n'
+userScriptBody += "            console.log('[CFS] Checking rule:', rule.file, 'patterns:', patterns);\n"
 userScriptBody += '            for (const pattern of patterns) {\n'
 userScriptBody +=
   '                const regex = matchPatternToRegex(pattern);\n'
 userScriptBody += '                if (regex.test(fullUrl)) {\n'
+userScriptBody += "                    console.log('[CFS] Matched pattern:', pattern);\n"
 userScriptBody += '                    return rule.file;\n'
 userScriptBody += '                }\n'
 userScriptBody += '            }\n'
 userScriptBody += '        }\n'
+userScriptBody += "        console.log('[CFS] No matching CSS file found');\n"
 userScriptBody += '        return null;\n'
 userScriptBody += '    }\n\n'
 userScriptBody += '    // Apply stylesheet\n'
 userScriptBody += '    function applyStylesheet() {\n'
 userScriptBody += '        const cssFile = getMatchingStylesheet();\n'
+userScriptBody += "        console.log('[CFS] CSS file to load:', cssFile);\n"
 userScriptBody += '        if (!cssFile) return;\n\n'
-userScriptBody += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n\n"
+userScriptBody += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n"
+userScriptBody += "        console.log('[CFS] Loading CSS:', cssUrl);\n\n"
 userScriptBody += "        if (typeof GM_addStyle !== 'undefined') {\n"
 userScriptBody += '            fetch(cssUrl)\n'
 userScriptBody += '                .then(response => response.text())\n'

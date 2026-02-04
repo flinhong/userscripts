@@ -1,6 +1,6 @@
 {
   "name": "userscripts",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "userscripts for styling web with custom fonts",
   "main": "src/main.js",
   "scripts": {

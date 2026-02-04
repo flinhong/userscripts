@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.12
+// @version      1.0.13
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -63,25 +63,31 @@
         if (!domainConfig || !domainConfig.rules) return null;
 
         const fullUrl = window.location.href;
+        console.log('[CFS] Checking URL:', fullUrl);
 
         for (const rule of domainConfig.rules) {
             const patterns = rule.domains || rule.match || [];
+            console.log('[CFS] Checking rule:', rule.file, 'patterns:', patterns);
             for (const pattern of patterns) {
                 const regex = matchPatternToRegex(pattern);
                 if (regex.test(fullUrl)) {
+                    console.log('[CFS] Matched pattern:', pattern);
                     return rule.file;
                 }
             }
         }
+        console.log('[CFS] No matching CSS file found');
         return null;
     }
 
     // Apply stylesheet
     function applyStylesheet() {
         const cssFile = getMatchingStylesheet();
+        console.log('[CFS] CSS file to load:', cssFile);
         if (!cssFile) return;
 
         const cssUrl = cssBaseUrl + '/' + cssFile;
+        console.log('[CFS] Loading CSS:', cssUrl);
 
         if (typeof GM_addStyle !== 'undefined') {
             fetch(cssUrl)
