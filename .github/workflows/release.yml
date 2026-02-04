@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Release and push
+        run: npm run release:ci
+
+      - name: Keep recent tags (keep last 10)
+        run: |
+          # Count tags
+          TAG_COUNT=$(git tag | wc -l)
+          echo "Total tags: $TAG_COUNT"
+
+          # If more than 10, delete old ones
+          if [ "$TAG_COUNT" -gt 10 ]; then
+            DELETE_COUNT=$((TAG_COUNT - 10))
+            echo "Deleting $DELETE_COUNT old tags"
+
+            # Get old tags (excluding last 10)
+            git tag --sort=-v:refname | tail -n +11 | while read -r tag; do
+              echo "Deleting remote tag: $tag"
+              git push origin ":refs/tags/$tag" || true
+              echo "Deleting local tag: $tag"
+              git tag -d "$tag" || true
+            done
+          fi

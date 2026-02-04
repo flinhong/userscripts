@@ -6,10 +6,11 @@
   "scripts": {
     "clean": "rm -rf public",
     "build": "npm run clean && node scripts/build.js",
-    "release": "standard-version",
-    "release:minor": "standard-version --release-as minor",
-    "release:major": "standard-version --release-as major",
-    "release:patch": "standard-version --release-as patch"
+    "release": "standard-version --dry-run",
+    "release:minor": "standard-version --release-as minor --dry-run",
+    "release:major": "standard-version --release-as major --dry-run",
+    "release:patch": "standard-version --release-as patch --dry-run",
+    "release:ci": "standard-version && git push origin --follow-tags"
   },
   "repository": {
     "type": "git",
