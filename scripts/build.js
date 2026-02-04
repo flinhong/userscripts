@@ -146,6 +146,7 @@ userScriptBody += '    };\n\n'
 userScriptBody += '    // Convert @match pattern to regex\n'
 userScriptBody += '    function matchPatternToRegex(pattern) {\n'
 userScriptBody += "        let regex = '^' + pattern\n"
+userScriptBody += "            .replace(/^\\*:\\/\\//, '.*:')\n"
 userScriptBody += "            .replace(/\\*/g, '.*')\n"
 userScriptBody += "            .replace(/\\./g, '\\\\.');\n"
 userScriptBody += '        return new RegExp(regex);\n'
@@ -163,6 +164,7 @@ userScriptBody += "            console.log('[CFS] Checking rule:', rule.file, 'p
 userScriptBody += '            for (const pattern of patterns) {\n'
 userScriptBody +=
   '                const regex = matchPatternToRegex(pattern);\n'
+userScriptBody += "                console.log('[CFS] Testing pattern:', pattern, '-> regex:', regex.toString(), 'against URL:', fullUrl, '-> result:', regex.test(fullUrl));\n"
 userScriptBody += '                if (regex.test(fullUrl)) {\n'
 userScriptBody += "                    console.log('[CFS] Matched pattern:', pattern);\n"
 userScriptBody += '                    return rule.file;\n'
@@ -178,7 +180,7 @@ userScriptBody += '        const cssFile = getMatchingStylesheet();\n'
 userScriptBody += "        console.log('[CFS] CSS file to load:', cssFile);\n"
 userScriptBody += '        if (!cssFile) return;\n\n'
 userScriptBody += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n"
-userScriptBody += "        console.log('[CFS] Loading CSS:', cssUrl);\n\n"
+userScriptBody += "        console.log('[CFS] Loading CSS from:', cssUrl);\n"
 userScriptBody += "        if (typeof GM_addStyle !== 'undefined') {\n"
 userScriptBody += '            fetch(cssUrl)\n'
 userScriptBody += '                .then(response => response.text())\n'

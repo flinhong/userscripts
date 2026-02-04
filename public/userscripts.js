@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.13
+// @version      1.0.14
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -53,6 +53,7 @@
     // Convert @match pattern to regex
     function matchPatternToRegex(pattern) {
         let regex = '^' + pattern
+            .replace(/^\*:\/\//, '.*:')
             .replace(/\*/g, '.*')
             .replace(/\./g, '\\.');
         return new RegExp(regex);
@@ -70,6 +71,7 @@
             console.log('[CFS] Checking rule:', rule.file, 'patterns:', patterns);
             for (const pattern of patterns) {
                 const regex = matchPatternToRegex(pattern);
+                console.log('[CFS] Testing pattern:', pattern, '-> regex:', regex.toString(), 'against URL:', fullUrl, '-> result:', regex.test(fullUrl));
                 if (regex.test(fullUrl)) {
                     console.log('[CFS] Matched pattern:', pattern);
                     return rule.file;
@@ -87,8 +89,7 @@
         if (!cssFile) return;
 
         const cssUrl = cssBaseUrl + '/' + cssFile;
-        console.log('[CFS] Loading CSS:', cssUrl);
-
+        console.log('[CFS] Loading CSS from:', cssUrl);
         if (typeof GM_addStyle !== 'undefined') {
             fetch(cssUrl)
                 .then(response => response.text())
