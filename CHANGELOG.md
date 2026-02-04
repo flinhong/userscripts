@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/flinhong/userscripts/compare/v0.0.5...v0.0.6) (2026-02-04)
+
+
+### Features
+
+* using CDN for publishing ([18cd397](https://github.com/flinhong/userscripts/commit/18cd39709fe61d8588e7b82db9fe0d464fe52d9c))
+
 ### [0.0.5](https://github.com/flinhong/userscripts/compare/v0.0.4...v0.0.5) (2026-02-04)
 
 

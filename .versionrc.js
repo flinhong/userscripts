@@ -15,6 +15,6 @@ module.exports = {
   },
   tagPrefix: 'v',
   hooks: {
-    prebump: 'npm run build'
+    postbump: 'npm run build'
   }
 }

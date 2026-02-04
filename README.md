@@ -15,12 +15,18 @@ A userscript that applies custom fonts and styles to various websites.
 ### Tampermonkey
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/)
-2. Install the script from [releases](https://github.com/flinhong/userscripts/releases)
+2. Install the script:
+   ```
+   https://cdn.frankindev.com/statically/gh/flinhong/userscripts/main/tampermonkey.js
+   ```
 
 ### Safari
 
 1. Install [Userscripts](https://apps.apple.com/app/userscripts/id1463298887)
-2. Install the script from [releases](https://github.com/flinhong/userscripts/releases)
+2. Install the script:
+   ```
+   https://cdn.frankindev.com/statically/gh/flinhong/userscripts/main/userscripts.js
+   ```
 
 ## Supported Sites
 
@@ -44,9 +50,6 @@ npm run release              # Auto-detect version from commits
 npm run release:patch        # 1.0.0 → 1.0.1
 npm run release:minor        # 1.0.0 → 1.1.0
 npm run release:major        # 1.0.0 → 2.0.0
-
-# Push with tags
-git push --follow-tags
 ```
 
 ## Release Process
@@ -59,7 +62,7 @@ git push --follow-tags
    git commit -m "feat: add new feature"
    ```
 
-2. **Run release command** to bump version and generate CHANGELOG
+2. **Run release command** to bump version and build
    ```bash
    # Auto-detect version from commits
    npm run release
@@ -72,6 +75,7 @@ git push --follow-tags
 
    This will:
    - Update `package.json` version
+   - Build the project with new version
    - Generate/update `CHANGELOG.md`
    - Create a git tag (e.g., `v1.0.1`)
 
@@ -85,15 +89,11 @@ git push --follow-tags
    git push origin v1.0.1
    ```
 
-4. **GitHub Actions** will automatically:
-   - Detect the new tag
-   - Build the project
-   - Create a GitHub Release
-   - Upload build artifacts:
-     - `tampermonkey.js`
-     - `userscripts.js`
-     - `domain.jsonp`
-     - All CSS files from `public/styles/`
+4. **CDN automatically syncs** - Resources are available via CDN:
+   - `.../main/tampermonkey.js`
+   - `.../main/userscripts.js`
+   - `...@v1.0.1/public/domain.jsonp`
+   - `...@v1.0.1/public/styles/*.css`
 
 ### Commit Message Format
 
@@ -154,13 +154,12 @@ git push origin main --follow-tags     # Push again
 
 If you need to undo a release:
 
-1. Delete the GitHub Release (via GitHub web UI)
-2. Delete the tag locally and remotely:
+1. Delete the tag locally and remotely:
    ```bash
    git tag -d v1.0.1
    git push origin :refs/tags/v1.0.1
    ```
-3. Restore the code to previous version if needed:
+2. Restore the code to previous version if needed:
    ```bash
    git checkout v1.0.0
    ```
