@@ -68,13 +68,15 @@ tampermonkeyHeader += '// ==/UserScript=='
 
 let userScriptBody = '\n\n(function() {\n'
 userScriptBody += "    'use strict';\n\n"
+userScriptBody += '    const scriptVersion = typeof GM_info !== \'undefined\' ? GM_info.script.version : \'unknown\';\n'
 userScriptBody += '    let domainConfig = null;\n'
-userScriptBody +=
-  "    const configUrl = '" + cdnBase + "/public/domain." + version + ".jsonp';\n"
+userScriptBody += "    const configUrl = '" + cdnBase + "/public/domain.' + scriptVersion + '.jsonp';\n"
 userScriptBody += "    const cssBaseUrl = '" + cssBaseUrl + "';\n\n"
 userScriptBody += '    // JSONP callback function\n'
 userScriptBody += '    window.domainConfigCallback = function(config) {\n'
 userScriptBody += '        domainConfig = config;\n'
+userScriptBody +=
+  "        console.log('[Custom Font Styler] Script version:', scriptVersion);\n"
 userScriptBody +=
   "        console.log('[Custom Font Styler] Config loaded:', config.rules.length, 'rules');\n"
 userScriptBody +=

@@ -45,6 +45,20 @@ versionJson.version = newVersion
 fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2) + '\n')
 console.log('✓ Updated configs/version.json')
 
+// Clean old domain.jsonp files from public directory
+console.log('\nCleaning old version files...')
+const publicDir = path.join(__dirname, '../public')
+if (fs.existsSync(publicDir)) {
+  const files = fs.readdirSync(publicDir)
+  files.forEach(function (file) {
+    if (file.startsWith('domain.') && file.endsWith('.jsonp') && file !== 'domain.' + newVersion + '.jsonp') {
+      const filePath = path.join(publicDir, file)
+      fs.unlinkSync(filePath)
+      console.log('  Removed:', file)
+    }
+  })
+}
+
 // Build the project
 console.log('\nRunning build...')
 require('./build.js')
