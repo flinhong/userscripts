@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.11
+// @version      1.0.12
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
 // @supportURL   https://github.com/flinhong/userscripts/issues
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
+// @icon         https://cdn.frankindev.com/favicon.ico
 // @match        *://news.baidu.com/*
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*

@@ -108,6 +108,7 @@ tampermonkeyHeader +=
   '// @updateURL    ' + cdnBase + '/public/userscripts.js\n'
 tampermonkeyHeader +=
   '// @downloadURL  ' + cdnBase + '/public/userscripts.js\n'
+tampermonkeyHeader += '// @icon         https://cdn.frankindev.com/favicon.ico\n'
 uniqueMatches.forEach(function (match) {
   tampermonkeyHeader += '// @match        ' + match + '\n'
 })
