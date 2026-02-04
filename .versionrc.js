@@ -10,8 +10,8 @@ module.exports = {
     { type: 'test', hidden: true }
   ],
   skip: {
-    tag: true,
     commit: true,
     bump: false
-  }
+  },
+  tagPrefix: 'v'
 }
