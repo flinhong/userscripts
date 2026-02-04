@@ -11,6 +11,7 @@
 }
 
 body,
+#main #cnt,
 input,
 button,
 [data-snc] .notranslate span,
