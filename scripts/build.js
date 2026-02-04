@@ -154,126 +154,133 @@ tampermonkeyHeader += '// @grant        GM_addStyle\n'
 tampermonkeyHeader += '// @run-at       document-start\n'
 tampermonkeyHeader += '// ==/UserScript=='
 
-let userScriptBody = '\n\n(function() {\n'
-userScriptBody += "    'use strict';\n\n"
-userScriptBody += '    const scriptVersion = typeof GM_info !== \'undefined\' ? GM_info.script.version : \'unknown\';\n'
-userScriptBody += '    let domainConfig = null;\n'
-userScriptBody += "    // Parse CDN base URL from @updateURL in GM_info\n"
-userScriptBody += "    let cdnBase = '';\n"
-userScriptBody += "    if (typeof GM_info !== 'undefined' && GM_info.scriptMetaStr) {\n"
-userScriptBody += "        const updateUrlMatch = GM_info.scriptMetaStr.match(/@updateURL\\s+(\\S+)/);\n"
-userScriptBody += "        if (updateUrlMatch) {\n"
-userScriptBody += "            cdnBase = updateUrlMatch[1].replace(/\\/public\\/userscripts\\.js$/, '');\n"
-userScriptBody += "        }\n"
-userScriptBody += "    }\n"
-userScriptBody += "    const configUrl = cdnBase + '/public/domain.' + scriptVersion + '.jsonp';\n"
-userScriptBody += "    const cssBaseUrl = cdnBase + '/public/styles';\n\n"
+// Generate common body content
+function generateBody(scriptName) {
+  let body = '\n\n(function() {\n'
+  body += "    'use strict';\n\n"
+  body += '    const scriptVersion = typeof GM_info !== \'undefined\' ? GM_info.script.version : \'unknown\';\n'
+  body += '    let domainConfig = null;\n'
+  body += "    // Parse CDN base URL from @updateURL in GM_info\n"
+  body += "    let cdnBase = '';\n"
+  body += "    if (typeof GM_info !== 'undefined' && GM_info.scriptMetaStr) {\n"
+  body += "        const updateUrlMatch = GM_info.scriptMetaStr.match(/@updateURL\\s+(\\S+)/);\n"
+  body += "        if (updateUrlMatch) {\n"
+  body += "            cdnBase = updateUrlMatch[1].replace(/\\/public\\/" + scriptName + "\\.js$/, '');\n"
+  body += "        }\n"
+  body += "    }\n"
+  body += "    const configUrl = cdnBase + '/public/domain.' + scriptVersion + '.jsonp';\n"
+  body += "    const cssBaseUrl = cdnBase + '/public/styles';\n\n"
+  body += '    // JSONP callback function\n'
+  body += '    window.domainConfigCallback = function(config) {\n'
+  body += '        domainConfig = config;\n'
+  body +=
+    "        console.log('[CFS] Config loaded:', config.rules.length, 'rules');\n"
+  body += '        applyStylesheet();\n'
+  body += '    };\n\n'
+  body += '    // Extract hostname from @match pattern\n'
+  body += '    function extractHostnameFromPattern(pattern) {\n'
+  body += '        const match = pattern.match(/\\*:\\/\\/([^\\/]+)/);\n'
+  body += '        return match ? match[1] : null;\n'
+  body += '    }\n\n'
+  body += '    // Get matching CSS file for current URL\n'
+  body += '    function getMatchingStylesheet() {\n'
+  body +=
+    '        if (!domainConfig || !domainConfig.rules) return null;\n\n'
+  body += '        const hostname = window.location.hostname;\n'
+  body += '        for (const rule of domainConfig.rules) {\n'
+  body +=
+    '            const patterns = rule.domains || rule.match || [];\n'
+  body += '            for (const pattern of patterns) {\n'
+  body +=
+    '                const patternHostname = extractHostnameFromPattern(pattern);\n'
+  body += '                if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {\n'
+  body += '                    return rule.file;\n'
+  body += '                }\n'
+  body += '            }\n'
+  body += '        }\n'
+  body += '        return null;\n'
+  body += '    }\n\n'
+  body += '    // Apply stylesheet\n'
+  body += '    function applyStylesheet() {\n'
+  body += '        const cssFile = getMatchingStylesheet();\n'
+  body += '        if (!cssFile) return;\n\n'
+  body += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n"
+  body += "        if (typeof GM_addStyle !== 'undefined') {\n"
+  body += '            fetch(cssUrl)\n'
+  body += '                .then(response => response.text())\n'
+  body += '                .then(css => {\n'
+  body += '                    GM_addStyle(css);\n'
+  body +=
+    "                    console.log('[CFS] Loaded:', cssFile, 'for', window.location.hostname);\n"
+  body += '                })\n'
+  body += '                .catch(err => {\n'
+  body +=
+    "                    console.error('[CFS] Failed to load:', err);\n"
+  body += '                });\n'
+  body += '        } else {\n'
+  body += "            const link = document.createElement('link');\n"
+  body += "            link.rel = 'stylesheet';\n"
+  body += '            link.href = cssUrl;\n'
+  body +=
+    '            (document.head || document.documentElement).appendChild(link);\n'
+  body += '        }\n'
+  body += '    }\n\n'
+  body += '    // Load config - try @resource first, fallback to GM_xmlhttpRequest\n'
+  body += '    function loadConfig() {\n'
+  body += "        if (typeof GM_getResourceText !== 'undefined') {\n"
+  body += "            // Tampermonkey with @resource support\n"
+  body += "            try {\n"
+  body += "                const configText = GM_getResourceText('config');\n"
+  body += "                eval(configText);\n"
+  body += "                console.log('[CFS] Loaded config from @resource');\n"
+  body += "            } catch (e) {\n"
+  body += "                console.error('[CFS] Failed to load @resource:', e);\n"
+  body += "                loadConfigFallback();\n"
+  body += "            }\n"
+  body += "        } else if (typeof GM_xmlhttpRequest !== 'undefined') {\n"
+  body += "            // Fallback for Safari/others\n"
+  body += "            loadConfigFallback();\n"
+  body += "        }\n"
+  body += "    }\n\n"
+  body += '    // Fallback: load config via GM_xmlhttpRequest\n'
+  body += '    function loadConfigFallback() {\n'
+  body += "        console.log('[CFS] Loading config from:', configUrl);\n"
+  body += '        GM_xmlhttpRequest({\n'
+  body += "            method: 'GET',\n"
+  body += '            url: configUrl,\n'
+  body += '            onload: function(response) {\n'
+  body += '                if (response.status !== 200) {\n'
+  body +=
+    "                    console.error('[CFS] HTTP error:', response.status, response.statusText);\n"
+  body += '                    return;\n'
+  body += '                }\n'
+  body += '                try {\n'
+  body += '                    eval(response.responseText);\n'
+  body +=
+    "                    console.log('[CFS] Loaded config from CDN');\n"
+  body += '                } catch (e) {\n'
+  body +=
+    "                    console.error('[CFS] Failed to load config:', e);\n"
+  body += '                }\n'
+  body += '            },\n'
+  body += '            onerror: function(err) {\n'
+  body +=
+    "                    console.error('[CFS] Network error:', err);\n"
+  body += '            }\n'
+  body += '        });\n'
+  body += '    }\n\n'
+  body += '    // Initialize\n'
+  body += '    loadConfig();\n'
+  body += '})();\n'
+  return body
+}
 
-userScriptBody += '    // JSONP callback function\n'
-userScriptBody += '    window.domainConfigCallback = function(config) {\n'
-userScriptBody += '        domainConfig = config;\n'
-userScriptBody +=
-  "        console.log('[CFS] Config loaded:', config.rules.length, 'rules');\n"
-userScriptBody += '        applyStylesheet();\n'
-userScriptBody += '    };\n\n'
-userScriptBody += '    // Extract hostname from @match pattern\n'
-userScriptBody += '    function extractHostnameFromPattern(pattern) {\n'
-userScriptBody += '        const match = pattern.match(/\\*:\\/\\/([^\\/]+)/);\n'
-userScriptBody += '        return match ? match[1] : null;\n'
-userScriptBody += '    }\n\n'
-userScriptBody += '    // Get matching CSS file for current URL\n'
-userScriptBody += '    function getMatchingStylesheet() {\n'
-userScriptBody +=
-  '        if (!domainConfig || !domainConfig.rules) return null;\n\n'
-userScriptBody += '        const hostname = window.location.hostname;\n'
-userScriptBody += '        for (const rule of domainConfig.rules) {\n'
-userScriptBody +=
-  '            const patterns = rule.domains || rule.match || [];\n'
-userScriptBody += '            for (const pattern of patterns) {\n'
-userScriptBody +=
-  '                const patternHostname = extractHostnameFromPattern(pattern);\n'
-userScriptBody += '                if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {\n'
-userScriptBody += '                    return rule.file;\n'
-userScriptBody += '                }\n'
-userScriptBody += '            }\n'
-userScriptBody += '        }\n'
-userScriptBody += '        return null;\n'
-userScriptBody += '    }\n\n'
-userScriptBody += '    // Apply stylesheet\n'
-userScriptBody += '    function applyStylesheet() {\n'
-userScriptBody += '        const cssFile = getMatchingStylesheet();\n'
-userScriptBody += '        if (!cssFile) return;\n\n'
-userScriptBody += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n"
-userScriptBody += "        if (typeof GM_addStyle !== 'undefined') {\n"
-userScriptBody += '            fetch(cssUrl)\n'
-userScriptBody += '                .then(response => response.text())\n'
-userScriptBody += '                .then(css => {\n'
-userScriptBody += '                    GM_addStyle(css);\n'
-userScriptBody +=
-  "                    console.log('[CFS] Loaded:', cssFile, 'for', window.location.hostname);\n"
-userScriptBody += '                })\n'
-userScriptBody += '                .catch(err => {\n'
-userScriptBody +=
-  "                    console.error('[CFS] Failed to load:', err);\n"
-userScriptBody += '                });\n'
-userScriptBody += '        } else {\n'
-userScriptBody += "            const link = document.createElement('link');\n"
-userScriptBody += "            link.rel = 'stylesheet';\n"
-userScriptBody += '            link.href = cssUrl;\n'
-userScriptBody +=
-  '            (document.head || document.documentElement).appendChild(link);\n'
-userScriptBody += '        }\n'
-userScriptBody += '    }\n\n'
-userScriptBody += '    // Load config - try @resource first, fallback to GM_xmlhttpRequest\n'
-userScriptBody += '    function loadConfig() {\n'
-userScriptBody += "        if (typeof GM_getResourceText !== 'undefined') {\n"
-userScriptBody += "            // Tampermonkey with @resource support\n"
-userScriptBody += "            try {\n"
-userScriptBody += "                const configText = GM_getResourceText('config');\n"
-userScriptBody += "                eval(configText);\n"
-userScriptBody += "                console.log('[CFS] Loaded config from @resource');\n"
-userScriptBody += "            } catch (e) {\n"
-userScriptBody += "                console.error('[CFS] Failed to load @resource:', e);\n"
-userScriptBody += "                loadConfigFallback();\n"
-userScriptBody += "            }\n"
-userScriptBody += "        } else if (typeof GM_xmlhttpRequest !== 'undefined') {\n"
-userScriptBody += "            // Fallback for Safari/others\n"
-userScriptBody += "            loadConfigFallback();\n"
-userScriptBody += "        }\n"
-userScriptBody += "    }\n\n"
-userScriptBody += '    // Fallback: load config via GM_xmlhttpRequest\n'
-userScriptBody += '    function loadConfigFallback() {\n'
-userScriptBody += "        console.log('[CFS] Loading config from:', configUrl);\n"
-userScriptBody += '        GM_xmlhttpRequest({\n'
-userScriptBody += "            method: 'GET',\n"
-userScriptBody += '            url: configUrl,\n'
-userScriptBody += '            onload: function(response) {\n'
-userScriptBody += '                if (response.status !== 200) {\n'
-userScriptBody +=
-  "                    console.error('[CFS] HTTP error:', response.status, response.statusText);\n"
-userScriptBody += '                    return;\n'
-userScriptBody += '                }\n'
-userScriptBody += '                try {\n'
-userScriptBody += '                    eval(response.responseText);\n'
-userScriptBody +=
-  "                    console.log('[CFS] Loaded config from CDN');\n"
-userScriptBody += '                } catch (e) {\n'
-userScriptBody +=
-  "                    console.error('[CFS] Failed to load config:', e);\n"
-userScriptBody += '                }\n'
-userScriptBody += '            },\n'
-userScriptBody += '            onerror: function(err) {\n'
-userScriptBody +=
-  "                    console.error('[CFS] Network error:', err);\n"
-userScriptBody += '            }\n'
-userScriptBody += '        });\n'
-userScriptBody += '    }\n\n'
-userScriptBody += '    // Initialize\n'
-userScriptBody += '    loadConfig();\n'
-userScriptBody += '})();\n'
+const userscriptBody = generateBody('userscripts')
+const tampermonkeyBody = generateBody('tampermonkey')
 
-const userscript = userscriptHeader + userScriptBody
-const tampermonkeyScript = tampermonkeyHeader + userScriptBody
+
+const userscript = userscriptHeader + userscriptBody
+const tampermonkeyScript = tampermonkeyHeader + tampermonkeyBody
 
 fs.writeFileSync(
   path.join(__dirname, '../public/userscripts.js'),
@@ -289,9 +296,6 @@ console.log('✓ Build completed!')
 console.log('  Version: ' + version)
 console.log('  Generated: public/userscripts.js')
 console.log('  Generated: public/tampermonkey.js')
-console.log('  Generated: public/domain.' + version + '.jsonp')
-console.log('  Copied ' + cssFiles.length + ' CSS files to public/styles')
-console.log('  CDN URL: ' + cdnBase + '/public/userscripts.js')
 console.log('  Generated: public/domain.' + version + '.jsonp')
 console.log('  Copied ' + cssFiles.length + ' CSS files to public/styles')
 console.log('  CDN URL: ' + cdnBase + '/public/userscripts.js')

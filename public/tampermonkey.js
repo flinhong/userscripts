@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.16
+// @version      1.0.17
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -9,7 +9,7 @@
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
 // @icon         https://cdn.frankindev.com/favicon.ico
-// @resource     config https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/domain.1.0.16.jsonp
+// @resource     config https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/domain.1.0.17.jsonp
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://github.com/*
@@ -36,7 +36,7 @@
     if (typeof GM_info !== 'undefined' && GM_info.scriptMetaStr) {
         const updateUrlMatch = GM_info.scriptMetaStr.match(/@updateURL\s+(\S+)/);
         if (updateUrlMatch) {
-            cdnBase = updateUrlMatch[1].replace(/\/public\/userscripts\.js$/, '');
+            cdnBase = updateUrlMatch[1].replace(/\/public\/tampermonkey\.js$/, '');
         }
     }
     const configUrl = cdnBase + '/public/domain.' + scriptVersion + '.jsonp';
