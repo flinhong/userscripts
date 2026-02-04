@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.17
+// @version      1.0.18
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -53,8 +53,8 @@
         return match ? match[1] : null;
     }
 
-    // Get matching CSS file for current URL
-    function getMatchingStylesheet() {
+    // Get matching rule for current URL
+    function getMatchingRule() {
         if (!domainConfig || !domainConfig.rules) return null;
 
         const hostname = window.location.hostname;
@@ -63,7 +63,7 @@
             for (const pattern of patterns) {
                 const patternHostname = extractHostnameFromPattern(pattern);
                 if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {
-                    return rule.file;
+                    return rule;
                 }
             }
         }
@@ -72,16 +72,16 @@
 
     // Apply stylesheet
     function applyStylesheet() {
-        const cssFile = getMatchingStylesheet();
-        if (!cssFile) return;
+        const rule = getMatchingRule();
+        if (!rule) return;
 
-        const cssUrl = cssBaseUrl + '/' + cssFile;
+        const cssUrl = cssBaseUrl + '/' + rule.file;
         if (typeof GM_addStyle !== 'undefined') {
             fetch(cssUrl)
                 .then(response => response.text())
                 .then(css => {
                     GM_addStyle(css);
-                    console.log('[CFS] Loaded:', cssFile, 'for', window.location.hostname);
+                    console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);
                 })
                 .catch(err => {
                     console.error('[CFS] Failed to load:', err);
@@ -92,6 +92,38 @@
             link.href = cssUrl;
             (document.head || document.documentElement).appendChild(link);
         }
+    }
+
+    // Load Google Fonts - try @resource first, fallback to link tag
+    function loadFonts() {
+        const rule = getMatchingRule();
+        if (!rule || !rule.fonts) {
+            console.log('[CFS] Fonts disabled for this site');
+            return;
+        }
+        if (typeof GM_getResourceText !== 'undefined') {
+            // Tampermonkey with @resource support
+            try {
+                const fontsText = GM_getResourceText('fonts');
+                GM_addStyle(fontsText);
+                console.log('[CFS] Loaded fonts from @resource');
+            } catch (e) {
+                console.error('[CFS] Failed to load fonts from @resource:', e);
+                loadFontsFallback();
+            }
+        } else {
+            // Fallback for Safari/others
+            loadFontsFallback();
+        }
+    }
+
+    // Fallback: load fonts via link tag
+    function loadFontsFallback() {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.honglin.ac.cn/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';
+        (document.head || document.documentElement).appendChild(link);
+        console.log('[CFS] Loaded fonts via link tag');
     }
 
     // Load config - try @resource first, fallback to GM_xmlhttpRequest
@@ -138,4 +170,5 @@
 
     // Initialize
     loadConfig();
+    loadFonts();
 })();

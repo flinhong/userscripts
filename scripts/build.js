@@ -145,6 +145,7 @@ tampermonkeyHeader +=
   '/public/domain.' +
   version +
   '.jsonp\n'
+tampermonkeyHeader += '// @resource     fonts https://cdn.honglin.ac.cn/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap\n'
 uniqueMatches.forEach(function (match) {
   tampermonkeyHeader += '// @match        ' + match + '\n'
 })
@@ -182,8 +183,8 @@ function generateBody(scriptName) {
   body += '        const match = pattern.match(/\\*:\\/\\/([^\\/]+)/);\n'
   body += '        return match ? match[1] : null;\n'
   body += '    }\n\n'
-  body += '    // Get matching CSS file for current URL\n'
-  body += '    function getMatchingStylesheet() {\n'
+  body += '    // Get matching rule for current URL\n'
+  body += '    function getMatchingRule() {\n'
   body +=
     '        if (!domainConfig || !domainConfig.rules) return null;\n\n'
   body += '        const hostname = window.location.hostname;\n'
@@ -194,7 +195,7 @@ function generateBody(scriptName) {
   body +=
     '                const patternHostname = extractHostnameFromPattern(pattern);\n'
   body += '                if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {\n'
-  body += '                    return rule.file;\n'
+  body += '                    return rule;\n'
   body += '                }\n'
   body += '            }\n'
   body += '        }\n'
@@ -202,16 +203,16 @@ function generateBody(scriptName) {
   body += '    }\n\n'
   body += '    // Apply stylesheet\n'
   body += '    function applyStylesheet() {\n'
-  body += '        const cssFile = getMatchingStylesheet();\n'
-  body += '        if (!cssFile) return;\n\n'
-  body += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n"
+  body += '        const rule = getMatchingRule();\n'
+  body += '        if (!rule) return;\n\n'
+  body += "        const cssUrl = cssBaseUrl + '/' + rule.file;\n"
   body += "        if (typeof GM_addStyle !== 'undefined') {\n"
   body += '            fetch(cssUrl)\n'
   body += '                .then(response => response.text())\n'
   body += '                .then(css => {\n'
   body += '                    GM_addStyle(css);\n'
   body +=
-    "                    console.log('[CFS] Loaded:', cssFile, 'for', window.location.hostname);\n"
+    "                    console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);\n"
   body += '                })\n'
   body += '                .catch(err => {\n'
   body +=
@@ -225,6 +226,36 @@ function generateBody(scriptName) {
     '            (document.head || document.documentElement).appendChild(link);\n'
   body += '        }\n'
   body += '    }\n\n'
+  body += '    // Load Google Fonts - try @resource first, fallback to link tag\n'
+  body += '    function loadFonts() {\n'
+  body += '        const rule = getMatchingRule();\n'
+  body += '        if (!rule || !rule.fonts) {\n'
+  body += "            console.log('[CFS] Fonts disabled for this site');\n"
+  body += '            return;\n'
+  body += '        }\n'
+  body += "        if (typeof GM_getResourceText !== 'undefined') {\n"
+  body += "            // Tampermonkey with @resource support\n"
+  body += "            try {\n"
+  body += "                const fontsText = GM_getResourceText('fonts');\n"
+  body += "                GM_addStyle(fontsText);\n"
+  body += "                console.log('[CFS] Loaded fonts from @resource');\n"
+  body += "            } catch (e) {\n"
+  body += "                console.error('[CFS] Failed to load fonts from @resource:', e);\n"
+  body += "                loadFontsFallback();\n"
+  body += "            }\n"
+  body += "        } else {\n"
+  body += "            // Fallback for Safari/others\n"
+  body += "            loadFontsFallback();\n"
+  body += "        }\n"
+  body += "    }\n\n"
+  body += '    // Fallback: load fonts via link tag\n'
+  body += '    function loadFontsFallback() {\n'
+  body += "        const link = document.createElement('link');\n"
+  body += "        link.rel = 'stylesheet';\n"
+  body += "        link.href = 'https://cdn.honglin.ac.cn/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';\n"
+  body += "        (document.head || document.documentElement).appendChild(link);\n"
+  body += "        console.log('[CFS] Loaded fonts via link tag');\n"
+  body += "    }\n\n"
   body += '    // Load config - try @resource first, fallback to GM_xmlhttpRequest\n'
   body += '    function loadConfig() {\n'
   body += "        if (typeof GM_getResourceText !== 'undefined') {\n"
@@ -271,6 +302,7 @@ function generateBody(scriptName) {
   body += '    }\n\n'
   body += '    // Initialize\n'
   body += '    loadConfig();\n'
+  body += '    loadFonts();\n'
   body += '})();\n'
   return body
 }

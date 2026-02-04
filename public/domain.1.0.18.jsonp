@@ -2,6 +2,7 @@ domainConfigCallback({
   "rules": [
     {
       "file": "baidu.css",
+      "fonts": true,
       "domains": [
         "*://baidu.com/*",
         "*://www.baidu.com/*"
@@ -9,12 +10,14 @@ domainConfigCallback({
     },
     {
       "file": "github.css",
+      "fonts": true,
       "domains": [
         "*://github.com/*"
       ]
     },
     {
       "file": "bing.css",
+      "fonts": true,
       "domains": [
         "*://bing.com/*",
         "*://*.bing.com/*"
@@ -22,6 +25,7 @@ domainConfigCallback({
     },
     {
       "file": "google.css",
+      "fonts": true,
       "domains": [
         "*://google.com/*",
         "*://www.google.com/*",
@@ -31,6 +35,7 @@ domainConfigCallback({
     },
     {
       "file": "chatgpt.css",
+      "fonts": false,
       "match": [
         "*://chatgpt.com/*"
       ]

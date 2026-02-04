@@ -2,19 +2,23 @@
   "rules": [
     {
       "file": "baidu.css",
+      "fonts": true,
       "domains": ["*://baidu.com/*", "*://www.baidu.com/*"]
     },
 
     {
       "file": "github.css",
+      "fonts": true,
       "domains": ["*://github.com/*"]
     },
     {
       "file": "bing.css",
+      "fonts": true,
       "domains": ["*://bing.com/*", "*://*.bing.com/*"]
     },
     {
       "file": "google.css",
+      "fonts": true,
       "domains": [
         "*://google.com/*",
         "*://www.google.com/*",
@@ -24,6 +28,7 @@
     },
     {
       "file": "chatgpt.css",
+      "fonts": false,
       "match": ["*://chatgpt.com/*"]
     }
   ]
