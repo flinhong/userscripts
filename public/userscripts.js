@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.10
+// @version      1.0.11
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
 // @supportURL   https://github.com/flinhong/userscripts/issues
-// @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
-// @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
+// @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
+// @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
 // @match        *://news.baidu.com/*
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
@@ -29,15 +29,23 @@
 
     const scriptVersion = typeof GM_info !== 'undefined' ? GM_info.script.version : 'unknown';
     let domainConfig = null;
-    const configUrl = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/domain.' + scriptVersion + '.jsonp';
-    const cssBaseUrl = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts/configs/styles';
+    // Parse CDN base URL from @updateURL in GM_info
+    let cdnBase = '';
+    if (typeof GM_info !== 'undefined' && GM_info.scriptMetaStr) {
+        const updateUrlMatch = GM_info.scriptMetaStr.match(/@updateURL\s+(\S+)/);
+        if (updateUrlMatch) {
+            cdnBase = updateUrlMatch[1].replace(/\/public\/userscripts\.js$/, '');
+        }
+    }
+    const configUrl = cdnBase + '/public/domain.' + scriptVersion + '.jsonp';
+    const cssBaseUrl = cdnBase + '/public/styles';
 
     // JSONP callback function
     window.domainConfigCallback = function(config) {
         domainConfig = config;
-        console.log('[Custom Font Styler] Script version:', scriptVersion);
-        console.log('[Custom Font Styler] Config loaded:', config.rules.length, 'rules');
-        console.log('[Custom Font Styler] Current hostname:', window.location.hostname);
+        console.log('[CFS] Script version:', scriptVersion);
+        console.log('[CFS] Config loaded:', config.rules.length, 'rules');
+        console.log('[CFS] Current hostname:', window.location.hostname);
         applyStylesheet();
     };
 
@@ -79,10 +87,10 @@
                 .then(response => response.text())
                 .then(css => {
                     GM_addStyle(css);
-                    console.log('[Custom Font Styler] Loaded:', cssFile, 'for', window.location.hostname);
+                    console.log('[CFS] Loaded:', cssFile, 'for', window.location.hostname);
                 })
                 .catch(err => {
-                    console.error('[Custom Font Styler] Failed to load:', err);
+                    console.error('[CFS] Failed to load:', err);
                 });
         } else {
             const link = document.createElement('link');
@@ -94,27 +102,27 @@
 
     // Load config via GM_xmlhttpRequest (supports CORS)
     function loadConfig() {
-        console.log('[Custom Font Styler] Fetching config:', configUrl);
+        console.log('[CFS] Fetching config:', configUrl);
         GM_xmlhttpRequest({
             method: 'GET',
             url: configUrl,
             onload: function(response) {
-                console.log('[Custom Font Styler] Response status:', response.status);
-                console.log('[Custom Font Styler] Response length:', response.responseText?.length || 0);
+                console.log('[CFS] Response status:', response.status);
+                console.log('[CFS] Response length:', response.responseText?.length || 0);
                 if (response.status !== 200) {
-                    console.error('[Custom Font Styler] HTTP error:', response.status, response.statusText);
-                    console.error('[Custom Font Styler] Response:', response.responseText?.substring(0, 200) || 'empty');
+                    console.error('[CFS] HTTP error:', response.status, response.statusText);
+                    console.error('[CFS] Response:', response.responseText?.substring(0, 200) || 'empty');
                     return;
                 }
                 try {
                     eval(response.responseText);
                 } catch (e) {
-                    console.error('[Custom Font Styler] Failed to load config:', e);
-                    console.error('[Custom Font Styler] Response:', response.responseText?.substring(0, 200) || 'empty');
+                    console.error('[CFS] Failed to load config:', e);
+                    console.error('[CFS] Response:', response.responseText?.substring(0, 200) || 'empty');
                 }
             },
             onerror: function(err) {
-                    console.error('[Custom Font Styler] Network error:', err);
+                    console.error('[CFS] Network error:', err);
             }
         });
     }
