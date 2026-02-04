@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/flinhong/userscripts/compare/v0.0.4...v0.0.5) (2026-02-04)
+
+
+### Bug Fixes
+
+* version autofix ([12e0722](https://github.com/flinhong/userscripts/commit/12e072290cd3ab019e78dcd51cb55fbec88ebd24))
+
 ### 0.0.4 (2026-02-04)
 
 
