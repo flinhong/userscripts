@@ -13,5 +13,8 @@ module.exports = {
     commit: true,
     bump: false
   },
-  tagPrefix: 'v'
+  tagPrefix: 'v',
+  hooks: {
+    prebump: 'npm run build'
+  }
 }
