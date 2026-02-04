@@ -31,7 +31,11 @@
 .wrapper_new #u .s-top-username,
 #right-tool *,
 #left-tool *,
-.panel-list_8jHmm * {
+.panel-list_8jHmm *,
+.cu-font-base,
+._paragraph_10ku5_2,
+.pc-rg-upgrade_2X3zi .item_3WKCf,
+.pc-rs-upgrade_3SRoo .rs-link_2DE3Q {
   font-family: var(--font-sans);
 }
 
