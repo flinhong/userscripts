@@ -44,69 +44,70 @@ npm install
 
 # Build scripts
 npm run build
-
-# Create a release
-npm run release              # Auto-detect version from commits
-npm run release:patch        # 1.0.0 → 1.0.1
-npm run release:minor        # 1.0.0 → 1.1.0
-npm run release:major        # 1.0.0 → 2.0.0
 ```
 
 ## Release Process
 
-### Quick Release
+### Local Development (Dry-Run)
+
+Local release commands use `--dry-run` mode, which only shows what would happen without making actual changes:
 
 ```bash
-# Commit your changes
-git commit -m "feat: new feature"
-
-# Create release
-npm run release
-
-# Push to GitHub
-git push origin --follow-tags
+npm run release              # Preview version bump from commits
+npm run release:patch        # Preview 1.0.0 → 1.0.1
+npm run release:minor        # Preview 1.0.0 → 1.1.0
+npm run release:major        # Preview 1.0.0 → 2.0.0
 ```
 
-**That's it!** `npm run release` will:
-- Update `package.json` version
-- Build the project with new version
-- Auto-commit release changes
-- Create a git tag
+### Automated Release
 
-### Manual Version Bump
+The project uses GitHub Actions for automated release. Simply:
 
-```bash
-npm run release:patch   # 1.0.0 → 1.0.1 (bug fixes)
-npm run release:minor   # 1.0.0 → 1.1.0 (new features)
-npm run release:major   # 1.0.0 → 2.0.0 (breaking changes)
-```
+1. Commit your changes with conventional commit messages:
+   ```bash
+   git commit -m "feat: add new feature"
+   git commit -m "fix: correct bug"
+   ```
 
-### CDN Sync
+2. Push to `main` branch:
+   ```bash
+   git push origin main
+   ```
 
-After pushing, resources are available via CDN:
-   - `.../main/tampermonkey.js`
-   - `.../main/userscripts.js`
-   - `...@v1.0.1/public/domain.jsonp`
-   - `...@v1.0.1/public/styles/*.css`
+3. GitHub Actions will:
+   - Automatically bump version based on commit messages
+   - Build the project with the new version
+   - Commit build files
+   - Create a git tag
+   - Push to remote
+   - Keep only the 10 most recent tags
 
 ### Commit Message Format
 
-| Type | Description | Version Bump |
-|------|-------------|--------------|
-| `feat` | New feature | minor |
-| `fix` | Bug fix | patch |
-| `docs` | Documentation | - |
-| `style` | Code style | - |
-| `refactor` | Refactoring | - |
-| `perf` | Performance | - |
-| `test` | Tests | - |
-| `chore` | Build/CI | - |
+| Type   | Description         | Version Bump |
+|--------|---------------------|--------------|
+| `feat` | New feature         | minor        |
+| `fix`  | Bug fix             | patch        |
+| `docs` | Documentation       | -            |
+| `style`| Code style          | -            |
+| `refactor`| Refactoring      | -            |
+| `perf` | Performance         | -            |
+| `test` | Tests               | -            |
+| `chore`| Build/CI            | -            |
 
 Examples:
 - `feat: add support for new website`
 - `fix: correct font loading issue`
 - `feat!: breaking API changes`
 - `fix!: security patch`
+
+### CDN Versioning
+
+After release, resources are available via CDN using the `@version` syntax:
+- `.../public/tampermonkey.js` (latest)
+- `.../public/userscripts.js` (latest)
+- `...@v1.0.1/public/domain.jsonp`
+- `...@v1.0.1/public/styles/*.css`
 
 ### Tag Operations
 
