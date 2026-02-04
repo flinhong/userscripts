@@ -27,7 +27,7 @@ if (!fs.existsSync(publicDir)) {
 
 // Generate domain.jsonp for public directory
 const domainJsonp =
-  'domainConfig(' + JSON.stringify(domainConfig, null, 2) + ');'
+  'domainConfigCallback(' + JSON.stringify(domainConfig, null, 2) + ');'
 fs.writeFileSync(path.join(__dirname, '../public/domain.jsonp'), domainJsonp)
 
 // Generate tampermonkey.js
@@ -70,7 +70,7 @@ userScriptBody +=
   "    const configUrl = '" + cdnBase + "/public/domain.jsonp';\n"
 userScriptBody += "    const cssBaseUrl = '" + cssBaseUrl + "';\n\n"
 userScriptBody += '    // JSONP callback function\n'
-userScriptBody += '    window.domainConfig = function(config) {\n'
+userScriptBody += '    window.domainConfigCallback = function(config) {\n'
 userScriptBody += '        domainConfig = config;\n'
 userScriptBody +=
   "        console.log('[Custom Font Styler] Config loaded:', config.rules.length, 'rules');\n"

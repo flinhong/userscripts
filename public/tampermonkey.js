@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
+// @version      1.0.5
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -32,7 +32,7 @@
     const cssBaseUrl = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts/configs/styles';
 
     // JSONP callback function
-    window.domainConfig = function(config) {
+    window.domainConfigCallback = function(config) {
         domainConfig = config;
         console.log('[Custom Font Styler] Config loaded:', config.rules.length, 'rules');
         console.log('[Custom Font Styler] Current hostname:', window.location.hostname);

@@ -1,4 +1,4 @@
-domainConfig({
+domainConfigCallback({
   "rules": [
     {
       "file": "news.baidu.css",
