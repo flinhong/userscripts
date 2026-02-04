@@ -28,7 +28,10 @@ if (!fs.existsSync(publicDir)) {
 // Generate domain.jsonp for public directory
 const domainJsonp =
   'domainConfigCallback(' + JSON.stringify(domainConfig, null, 2) + ');'
-fs.writeFileSync(path.join(__dirname, '../public/domain.jsonp'), domainJsonp)
+fs.writeFileSync(
+  path.join(__dirname, '../public/domain.' + version + '.jsonp'),
+  domainJsonp
+)
 
 // Generate tampermonkey.js
 const matchRules = domainConfig.rules.flatMap(function (rule) {
@@ -67,7 +70,7 @@ let userScriptBody = '\n\n(function() {\n'
 userScriptBody += "    'use strict';\n\n"
 userScriptBody += '    let domainConfig = null;\n'
 userScriptBody +=
-  "    const configUrl = '" + cdnBase + "/public/domain.jsonp';\n"
+  "    const configUrl = '" + cdnBase + "/public/domain." + version + ".jsonp';\n"
 userScriptBody += "    const cssBaseUrl = '" + cssBaseUrl + "';\n\n"
 userScriptBody += '    // JSONP callback function\n'
 userScriptBody += '    window.domainConfigCallback = function(config) {\n'
@@ -176,5 +179,5 @@ fs.writeFileSync(
 console.log('✓ Build completed!')
 console.log('  Version: ' + version)
 console.log('  Generated: public/tampermonkey.js')
-console.log('  Generated: public/domain.jsonp')
+console.log('  Generated: public/domain.' + version + '.jsonp')
 console.log('  CDN URL: ' + cdnBase + '/public/tampermonkey.js')
