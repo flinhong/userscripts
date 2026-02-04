@@ -89,6 +89,36 @@ const matchRules = domainConfig.rules.flatMap(function (rule) {
 })
 const uniqueMatches = [...new Set(matchRules)]
 
+// Generate userscripts.js (Safari compatible)
+let userscriptHeader = '// ==UserScript==\n'
+userscriptHeader += '// @name         Custom Font Styler\n'
+userscriptHeader += '// @namespace    http://tampermonkey.net/\n'
+userscriptHeader += '// @version      ' + version + '\n'
+userscriptHeader +=
+  '// @description  Apply custom fonts and styles to various websites\n'
+userscriptHeader += '// @author       flinhong\n'
+userscriptHeader +=
+  '// @homepage     https://github.com/' + repoOwner + '/' + repoName + '\n'
+userscriptHeader +=
+  '// @supportURL   https://github.com/' +
+  repoOwner +
+  '/' +
+  repoName +
+  '/issues\n'
+userscriptHeader +=
+  '// @updateURL    ' + cdnBase + '/public/userscripts.js\n'
+userscriptHeader +=
+  '// @downloadURL  ' + cdnBase + '/public/userscripts.js\n'
+userscriptHeader += '// @icon         https://cdn.frankindev.com/favicon.ico\n'
+uniqueMatches.forEach(function (match) {
+  userscriptHeader += '// @match        ' + match + '\n'
+})
+userscriptHeader += '// @grant        GM_xmlhttpRequest\n'
+userscriptHeader += '// @grant        GM_addStyle\n'
+userscriptHeader += '// @run-at       document-start\n'
+userscriptHeader += '// ==/UserScript=='
+
+// Generate tampermonkey.js with @resource
 let tampermonkeyHeader = '// ==UserScript==\n'
 tampermonkeyHeader += '// @name         Custom Font Styler\n'
 tampermonkeyHeader += '// @namespace    http://tampermonkey.net/\n'
@@ -105,14 +135,21 @@ tampermonkeyHeader +=
   repoName +
   '/issues\n'
 tampermonkeyHeader +=
-  '// @updateURL    ' + cdnBase + '/public/userscripts.js\n'
+  '// @updateURL    ' + cdnBase + '/public/tampermonkey.js\n'
 tampermonkeyHeader +=
-  '// @downloadURL  ' + cdnBase + '/public/userscripts.js\n'
+  '// @downloadURL  ' + cdnBase + '/public/tampermonkey.js\n'
 tampermonkeyHeader += '// @icon         https://cdn.frankindev.com/favicon.ico\n'
+tampermonkeyHeader +=
+  '// @resource     config ' +
+  cdnBase +
+  '/public/domain.' +
+  version +
+  '.jsonp\n'
 uniqueMatches.forEach(function (match) {
   tampermonkeyHeader += '// @match        ' + match + '\n'
 })
-tampermonkeyHeader += '// @grant        GM_xmlhttpRequest\n'
+tampermonkeyHeader += '// @grant        GM_getResourceURL\n'
+tampermonkeyHeader += '// @grant        GM_getResourceText\n'
 tampermonkeyHeader += '// @grant        GM_addStyle\n'
 tampermonkeyHeader += '// @run-at       document-start\n'
 tampermonkeyHeader += '// ==/UserScript=='
@@ -187,8 +224,26 @@ userScriptBody +=
   '            (document.head || document.documentElement).appendChild(link);\n'
 userScriptBody += '        }\n'
 userScriptBody += '    }\n\n'
-userScriptBody += '    // Load config via GM_xmlhttpRequest (supports CORS)\n'
+userScriptBody += '    // Load config - try @resource first, fallback to GM_xmlhttpRequest\n'
 userScriptBody += '    function loadConfig() {\n'
+userScriptBody += "        if (typeof GM_getResourceText !== 'undefined') {\n"
+userScriptBody += "            // Tampermonkey with @resource support\n"
+userScriptBody += "            try {\n"
+userScriptBody += "                const configText = GM_getResourceText('config');\n"
+userScriptBody += "                eval(configText);\n"
+userScriptBody += "                console.log('[CFS] Loaded config from @resource');\n"
+userScriptBody += "            } catch (e) {\n"
+userScriptBody += "                console.error('[CFS] Failed to load @resource:', e);\n"
+userScriptBody += "                loadConfigFallback();\n"
+userScriptBody += "            }\n"
+userScriptBody += "        } else if (typeof GM_xmlhttpRequest !== 'undefined') {\n"
+userScriptBody += "            // Fallback for Safari/others\n"
+userScriptBody += "            loadConfigFallback();\n"
+userScriptBody += "        }\n"
+userScriptBody += "    }\n\n"
+userScriptBody += '    // Fallback: load config via GM_xmlhttpRequest\n'
+userScriptBody += '    function loadConfigFallback() {\n'
+userScriptBody += "        console.log('[CFS] Loading config from:', configUrl);\n"
 userScriptBody += '        GM_xmlhttpRequest({\n'
 userScriptBody += "            method: 'GET',\n"
 userScriptBody += '            url: configUrl,\n'
@@ -200,6 +255,8 @@ userScriptBody += '                    return;\n'
 userScriptBody += '                }\n'
 userScriptBody += '                try {\n'
 userScriptBody += '                    eval(response.responseText);\n'
+userScriptBody +=
+  "                    console.log('[CFS] Loaded config from CDN');\n"
 userScriptBody += '                } catch (e) {\n'
 userScriptBody +=
   "                    console.error('[CFS] Failed to load config:', e);\n"
@@ -215,16 +272,26 @@ userScriptBody += '    // Initialize\n'
 userScriptBody += '    loadConfig();\n'
 userScriptBody += '})();\n'
 
-const userscript = tampermonkeyHeader + userScriptBody
+const userscript = userscriptHeader + userScriptBody
+const tampermonkeyScript = tampermonkeyHeader + userScriptBody
 
 fs.writeFileSync(
   path.join(__dirname, '../public/userscripts.js'),
   userscript,
 )
 
+fs.writeFileSync(
+  path.join(__dirname, '../public/tampermonkey.js'),
+  tampermonkeyScript,
+)
+
 console.log('✓ Build completed!')
 console.log('  Version: ' + version)
 console.log('  Generated: public/userscripts.js')
+console.log('  Generated: public/tampermonkey.js')
+console.log('  Generated: public/domain.' + version + '.jsonp')
+console.log('  Copied ' + cssFiles.length + ' CSS files to public/styles')
+console.log('  CDN URL: ' + cdnBase + '/public/userscripts.js')
 console.log('  Generated: public/domain.' + version + '.jsonp')
 console.log('  Copied ' + cssFiles.length + ' CSS files to public/styles')
 console.log('  CDN URL: ' + cdnBase + '/public/userscripts.js')

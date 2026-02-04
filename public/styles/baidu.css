@@ -6,6 +6,11 @@
   --font-mono: 'IBM Plex Mono', 'Noto Serif SC', ui-monospace, 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
 }
 
+/* Smooth font transition */
+* {
+  transition: font-family 0.2s ease-in-out;
+}
+
 /* Sans Serif Fonts */
 #s-top-left .c-font-normal,
 .wrapper_new,

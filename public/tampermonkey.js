@@ -6,9 +6,10 @@
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
 // @supportURL   https://github.com/flinhong/userscripts/issues
-// @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
-// @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
+// @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
+// @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/tampermonkey.js
 // @icon         https://cdn.frankindev.com/favicon.ico
+// @resource     config https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/domain.1.0.16.jsonp
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://github.com/*
@@ -19,7 +20,8 @@
 // @match        *://www.google.co.uk/*
 // @match        *://www.google.com.hk/*
 // @match        *://chatgpt.com/*
-// @grant        GM_xmlhttpRequest
+// @grant        GM_getResourceURL
+// @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @run-at       document-start
 // ==/UserScript==
