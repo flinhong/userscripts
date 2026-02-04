@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      1.0.14
+// @version      1.0.15
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
@@ -9,7 +9,6 @@
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/userscripts.js
 // @icon         https://cdn.frankindev.com/favicon.ico
-// @match        *://news.baidu.com/*
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://github.com/*
@@ -44,52 +43,39 @@
     // JSONP callback function
     window.domainConfigCallback = function(config) {
         domainConfig = config;
-        console.log('[CFS] Script version:', scriptVersion);
         console.log('[CFS] Config loaded:', config.rules.length, 'rules');
-        console.log('[CFS] Current hostname:', window.location.hostname);
         applyStylesheet();
     };
 
-    // Convert @match pattern to regex
-    function matchPatternToRegex(pattern) {
-        let regex = '^' + pattern
-            .replace(/^\*:\/\//, '.*:')
-            .replace(/\*/g, '.*')
-            .replace(/\./g, '\\.');
-        return new RegExp(regex);
+    // Extract hostname from @match pattern
+    function extractHostnameFromPattern(pattern) {
+        const match = pattern.match(/\*:\/\/([^\/]+)/);
+        return match ? match[1] : null;
     }
 
     // Get matching CSS file for current URL
     function getMatchingStylesheet() {
         if (!domainConfig || !domainConfig.rules) return null;
 
-        const fullUrl = window.location.href;
-        console.log('[CFS] Checking URL:', fullUrl);
-
+        const hostname = window.location.hostname;
         for (const rule of domainConfig.rules) {
             const patterns = rule.domains || rule.match || [];
-            console.log('[CFS] Checking rule:', rule.file, 'patterns:', patterns);
             for (const pattern of patterns) {
-                const regex = matchPatternToRegex(pattern);
-                console.log('[CFS] Testing pattern:', pattern, '-> regex:', regex.toString(), 'against URL:', fullUrl, '-> result:', regex.test(fullUrl));
-                if (regex.test(fullUrl)) {
-                    console.log('[CFS] Matched pattern:', pattern);
+                const patternHostname = extractHostnameFromPattern(pattern);
+                if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {
                     return rule.file;
                 }
             }
         }
-        console.log('[CFS] No matching CSS file found');
         return null;
     }
 
     // Apply stylesheet
     function applyStylesheet() {
         const cssFile = getMatchingStylesheet();
-        console.log('[CFS] CSS file to load:', cssFile);
         if (!cssFile) return;
 
         const cssUrl = cssBaseUrl + '/' + cssFile;
-        console.log('[CFS] Loading CSS from:', cssUrl);
         if (typeof GM_addStyle !== 'undefined') {
             fetch(cssUrl)
                 .then(response => response.text())
@@ -110,23 +96,18 @@
 
     // Load config via GM_xmlhttpRequest (supports CORS)
     function loadConfig() {
-        console.log('[CFS] Fetching config:', configUrl);
         GM_xmlhttpRequest({
             method: 'GET',
             url: configUrl,
             onload: function(response) {
-                console.log('[CFS] Response status:', response.status);
-                console.log('[CFS] Response length:', response.responseText?.length || 0);
                 if (response.status !== 200) {
                     console.error('[CFS] HTTP error:', response.status, response.statusText);
-                    console.error('[CFS] Response:', response.responseText?.substring(0, 200) || 'empty');
                     return;
                 }
                 try {
                     eval(response.responseText);
                 } catch (e) {
                     console.error('[CFS] Failed to load config:', e);
-                    console.error('[CFS] Response:', response.responseText?.substring(0, 200) || 'empty');
                 }
             },
             onerror: function(err) {

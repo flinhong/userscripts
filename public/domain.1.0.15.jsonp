@@ -1,12 +1,6 @@
 domainConfigCallback({
   "rules": [
     {
-      "file": "news.baidu.css",
-      "domains": [
-        "*://news.baidu.com/*"
-      ]
-    },
-    {
       "file": "baidu.css",
       "domains": [
         "*://baidu.com/*",

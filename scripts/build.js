@@ -136,51 +136,37 @@ userScriptBody += '    // JSONP callback function\n'
 userScriptBody += '    window.domainConfigCallback = function(config) {\n'
 userScriptBody += '        domainConfig = config;\n'
 userScriptBody +=
-  "        console.log('[CFS] Script version:', scriptVersion);\n"
-userScriptBody +=
   "        console.log('[CFS] Config loaded:', config.rules.length, 'rules');\n"
-userScriptBody +=
-  "        console.log('[CFS] Current hostname:', window.location.hostname);\n"
 userScriptBody += '        applyStylesheet();\n'
 userScriptBody += '    };\n\n'
-userScriptBody += '    // Convert @match pattern to regex\n'
-userScriptBody += '    function matchPatternToRegex(pattern) {\n'
-userScriptBody += "        let regex = '^' + pattern\n"
-userScriptBody += "            .replace(/^\\*:\\/\\//, '.*:')\n"
-userScriptBody += "            .replace(/\\*/g, '.*')\n"
-userScriptBody += "            .replace(/\\./g, '\\\\.');\n"
-userScriptBody += '        return new RegExp(regex);\n'
+userScriptBody += '    // Extract hostname from @match pattern\n'
+userScriptBody += '    function extractHostnameFromPattern(pattern) {\n'
+userScriptBody += '        const match = pattern.match(/\\*:\\/\\/([^\\/]+)/);\n'
+userScriptBody += '        return match ? match[1] : null;\n'
 userScriptBody += '    }\n\n'
 userScriptBody += '    // Get matching CSS file for current URL\n'
 userScriptBody += '    function getMatchingStylesheet() {\n'
 userScriptBody +=
   '        if (!domainConfig || !domainConfig.rules) return null;\n\n'
-userScriptBody += '        const fullUrl = window.location.href;\n'
-userScriptBody += "        console.log('[CFS] Checking URL:', fullUrl);\n\n"
+userScriptBody += '        const hostname = window.location.hostname;\n'
 userScriptBody += '        for (const rule of domainConfig.rules) {\n'
 userScriptBody +=
   '            const patterns = rule.domains || rule.match || [];\n'
-userScriptBody += "            console.log('[CFS] Checking rule:', rule.file, 'patterns:', patterns);\n"
 userScriptBody += '            for (const pattern of patterns) {\n'
 userScriptBody +=
-  '                const regex = matchPatternToRegex(pattern);\n'
-userScriptBody += "                console.log('[CFS] Testing pattern:', pattern, '-> regex:', regex.toString(), 'against URL:', fullUrl, '-> result:', regex.test(fullUrl));\n"
-userScriptBody += '                if (regex.test(fullUrl)) {\n'
-userScriptBody += "                    console.log('[CFS] Matched pattern:', pattern);\n"
+  '                const patternHostname = extractHostnameFromPattern(pattern);\n'
+userScriptBody += '                if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {\n'
 userScriptBody += '                    return rule.file;\n'
 userScriptBody += '                }\n'
 userScriptBody += '            }\n'
 userScriptBody += '        }\n'
-userScriptBody += "        console.log('[CFS] No matching CSS file found');\n"
 userScriptBody += '        return null;\n'
 userScriptBody += '    }\n\n'
 userScriptBody += '    // Apply stylesheet\n'
 userScriptBody += '    function applyStylesheet() {\n'
 userScriptBody += '        const cssFile = getMatchingStylesheet();\n'
-userScriptBody += "        console.log('[CFS] CSS file to load:', cssFile);\n"
 userScriptBody += '        if (!cssFile) return;\n\n'
 userScriptBody += "        const cssUrl = cssBaseUrl + '/' + cssFile;\n"
-userScriptBody += "        console.log('[CFS] Loading CSS from:', cssUrl);\n"
 userScriptBody += "        if (typeof GM_addStyle !== 'undefined') {\n"
 userScriptBody += '            fetch(cssUrl)\n'
 userScriptBody += '                .then(response => response.text())\n'
@@ -203,21 +189,13 @@ userScriptBody += '        }\n'
 userScriptBody += '    }\n\n'
 userScriptBody += '    // Load config via GM_xmlhttpRequest (supports CORS)\n'
 userScriptBody += '    function loadConfig() {\n'
-userScriptBody +=
-  "        console.log('[CFS] Fetching config:', configUrl);\n"
 userScriptBody += '        GM_xmlhttpRequest({\n'
 userScriptBody += "            method: 'GET',\n"
 userScriptBody += '            url: configUrl,\n'
 userScriptBody += '            onload: function(response) {\n'
-userScriptBody +=
-  "                console.log('[CFS] Response status:', response.status);\n"
-userScriptBody +=
-  "                console.log('[CFS] Response length:', response.responseText?.length || 0);\n"
 userScriptBody += '                if (response.status !== 200) {\n'
 userScriptBody +=
   "                    console.error('[CFS] HTTP error:', response.status, response.statusText);\n"
-userScriptBody +=
-  "                    console.error('[CFS] Response:', response.responseText?.substring(0, 200) || 'empty');\n"
 userScriptBody += '                    return;\n'
 userScriptBody += '                }\n'
 userScriptBody += '                try {\n'
@@ -225,8 +203,6 @@ userScriptBody += '                    eval(response.responseText);\n'
 userScriptBody += '                } catch (e) {\n'
 userScriptBody +=
   "                    console.error('[CFS] Failed to load config:', e);\n"
-userScriptBody +=
-  "                    console.error('[CFS] Response:', response.responseText?.substring(0, 200) || 'empty');\n"
 userScriptBody += '                }\n'
 userScriptBody += '            },\n'
 userScriptBody += '            onerror: function(err) {\n'
