@@ -1,15 +1,15 @@
 {
   "name": "userscripts",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "userscripts for styling web with custom fonts",
   "main": "src/main.js",
   "scripts": {
     "clean": "rm -rf public",
     "build": "npm run clean && node scripts/build.js",
-    "release": "standard-version",
-    "release:minor": "standard-version --release-as minor",
-    "release:major": "standard-version --release-as major",
-    "release:patch": "standard-version --release-as patch"
+    "release": "standard-version && git tag v$(node -p \"require('./package.json').version\")",
+    "release:minor": "standard-version --release-as minor && git tag v$(node -p \"require('./package.json').version\")",
+    "release:major": "standard-version --release-as major && git tag v$(node -p \"require('./package.json').version\")",
+    "release:patch": "standard-version --release-as patch && git tag v$(node -p \"require('./package.json').version\")"
   },
   "repository": {
     "type": "git",

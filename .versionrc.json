@@ -9,11 +9,12 @@
     { "type": "perf", "hidden": true },
     { "type": "test", "hidden": true }
   ],
-  "skip": {
-    "commit": true
-  },
   "tagPrefix": "v",
+  "skip": {
+    "changelog": true,
+    "tag": true
+  },
   "scripts": {
-    "postbump": "node scripts/build.js"
+    "postbump": "node scripts/build.js && git add package.json package-lock.json public/ && git commit -m \"chore: release $(node -p \"require('./package.json').version\")\""
   }
 }

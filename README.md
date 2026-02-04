@@ -54,42 +54,36 @@ npm run release:major        # 1.0.0 → 2.0.0
 
 ## Release Process
 
-### Step-by-Step Guide
+### Quick Release
 
-1. **Commit your changes** using [conventional commits](https://www.conventionalcommits.org/)
-   ```bash
-   git add .
-   git commit -m "feat: add new feature"
-   ```
+```bash
+# Commit your changes
+git commit -m "feat: new feature"
 
-2. **Run release command** to bump version and build
-   ```bash
-   # Auto-detect version from commits
-   npm run release
+# Create release
+npm run release
 
-   # Or manually specify version
-   npm run release:patch   # 1.0.0 → 1.0.1 (bug fixes)
-   npm run release:minor   # 1.0.0 → 1.1.0 (new features)
-   npm run release:major   # 1.0.0 → 2.0.0 (breaking changes)
-   ```
+# Push to GitHub
+git push origin --follow-tags
+```
 
-   This will:
-   - Update `package.json` version
-   - Build the project with new version
-   - Generate/update `CHANGELOG.md`
-   - Create a git tag (e.g., `v1.0.1`)
+**That's it!** `npm run release` will:
+- Update `package.json` version
+- Build the project with new version
+- Auto-commit release changes
+- Create a git tag
 
-3. **Push code and tags** to GitHub
-   ```bash
-   # Push commits and tags together
-   git push origin main --follow-tags
+### Manual Version Bump
 
-   # Or push separately
-   git push origin main
-   git push origin v1.0.1
-   ```
+```bash
+npm run release:patch   # 1.0.0 → 1.0.1 (bug fixes)
+npm run release:minor   # 1.0.0 → 1.1.0 (new features)
+npm run release:major   # 1.0.0 → 2.0.0 (breaking changes)
+```
 
-4. **CDN automatically syncs** - Resources are available via CDN:
+### CDN Sync
+
+After pushing, resources are available via CDN:
    - `.../main/tampermonkey.js`
    - `.../main/userscripts.js`
    - `...@v1.0.1/public/domain.jsonp`
