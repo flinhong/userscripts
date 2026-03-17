@@ -29,6 +29,10 @@ html {
   font-family: var(--font-sans);
 }
 
+.HotSearchCard-change {
+  font-family: var(--font-serif);
+}
+
 pre,
 code,
 .highlight pre code {
