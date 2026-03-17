@@ -25,6 +25,10 @@ html {
     'lucida console', 'Courier New', monospace;
 }
 
+.HotSearchCard-itemText {
+  font-family: var(--font-sans);
+}
+
 pre,
 code,
 .highlight pre code {
