@@ -35,7 +35,10 @@
 .cu-font-base,
 ._paragraph_10ku5_2,
 .pc-rg-upgrade_2X3zi .item_3WKCf,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q {
+.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
+#right-tool :not(.cos-icon),
+#left-tool :not(.cos-icon),
+.panel-list_8jHmm :not(.cos-icon) {
   font-family: var(--font-sans);
 }
 
