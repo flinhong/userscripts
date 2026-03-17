@@ -64,12 +64,14 @@ npm run release:major        # Preview 1.0.0 → 2.0.0
 The project uses GitHub Actions for automated release. Simply:
 
 1. Commit your changes with conventional commit messages:
+
    ```bash
    git commit -m "feat: add new feature"
    git commit -m "fix: correct bug"
    ```
 
 2. Push to `main` branch:
+
    ```bash
    git push origin main
    ```
@@ -84,18 +86,19 @@ The project uses GitHub Actions for automated release. Simply:
 
 ### Commit Message Format
 
-| Type   | Description         | Version Bump |
-|--------|---------------------|--------------|
-| `feat` | New feature         | minor        |
-| `fix`  | Bug fix             | patch        |
-| `docs` | Documentation       | -            |
-| `style`| Code style          | -            |
-| `refactor`| Refactoring      | -            |
-| `perf` | Performance         | -            |
-| `test` | Tests               | -            |
-| `chore`| Build/CI            | -            |
+| Type       | Description   | Version Bump |
+| ---------- | ------------- | ------------ |
+| `feat`     | New feature   | minor        |
+| `fix`      | Bug fix       | patch        |
+| `docs`     | Documentation | -            |
+| `style`    | Code style    | -            |
+| `refactor` | Refactoring   | -            |
+| `perf`     | Performance   | -            |
+| `test`     | Tests         | -            |
+| `chore`    | Build/CI      | -            |
 
 Examples:
+
 - `feat: add support for new website`
 - `fix: correct font loading issue`
 - `feat!: breaking API changes`
@@ -104,6 +107,7 @@ Examples:
 ### CDN Versioning
 
 After release, resources are available via CDN using the `@version` syntax:
+
 - `.../public/tampermonkey.js` (latest)
 - `.../public/userscripts.js` (latest)
 - `...@v1.0.1/public/domain.jsonp`
@@ -112,31 +116,37 @@ After release, resources are available via CDN using the `@version` syntax:
 ### Tag Operations
 
 **List all tags:**
+
 ```bash
 git tag
 ```
 
 **View tag details:**
+
 ```bash
 git show v1.0.1
 ```
 
 **Delete a tag locally:**
+
 ```bash
 git tag -d v1.0.1
 ```
 
 **Delete a tag from remote:**
+
 ```bash
 git push origin :refs/tags/v1.0.1
 ```
 
 **Push a specific tag:**
+
 ```bash
 git push origin v1.0.1
 ```
 
 **Re-create a tag:**
+
 ```bash
 # If you need to undo a release
 git tag -d v1.0.1                    # Delete local tag
@@ -161,4 +171,4 @@ If you need to undo a release:
 
 ## License
 
-ISC
+MIT
