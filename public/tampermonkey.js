@@ -22,191 +22,151 @@
 // @match        *://www.google.co.uk/*
 // @match        *://www.google.com.hk/*
 // @match        *://chatgpt.com/*
-// @grant        GM_getResourceURL
-// @grant        GM_getResourceText
 // @grant        GM_xmlhttpRequest
 // @grant        GM_addStyle
+// @grant        GM_getResourceURL
+// @grant        GM_getResourceText
 // @run-at       document-start
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    const scriptVersion = typeof GM_info !== 'undefined' ? GM_info.script.version : 'unknown';
+    const SCRIPT_NAME = 'tampermonkey.js';
+    const FONT_URL = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';
+
+    /**
+     * State and Configuration
+     */
     let domainConfig = null;
-    // Parse CDN base URL from @updateURL in GM_info
-    let cdnBase = '';
-    if (typeof GM_info !== 'undefined' && GM_info.scriptMetaStr) {
-        const updateUrlMatch = GM_info.scriptMetaStr.match(/@updateURL\s+(\S+)/);
-        if (updateUrlMatch) {
-            cdnBase = updateUrlMatch[1].replace(/\/public\/tampermonkey\.js$/, '');
+    const info = typeof GM_info !== 'undefined' ? GM_info : {};
+    const version = info.script ? info.script.version : 'unknown';
+
+    // Derive CDN base from metadata
+    let cdnBase = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts';
+    if (info.scriptMetaStr) {
+        const match = info.scriptMetaStr.match(/@updateURL\s+(\S+)/);
+        if (match) {
+            cdnBase = match[1].replace(new RegExp(`/public/${SCRIPT_NAME}$`), '');
         }
     }
-    const configUrl = cdnBase + '@v' + scriptVersion + '/public/domain.jsonp';
-    const cssBaseUrl = cdnBase + '@v' + scriptVersion + '/public/styles';
 
-    // JSONP callback function
-    window.domainConfigCallback = function(config) {
+    const configUrl = `${cdnBase}@v${version}/public/domain.jsonp`;
+    const cssBaseUrl = `${cdnBase}@v${version}/public/styles`;
+
+    /**
+     * Helpers
+     */
+    const log = (...args) => console.log('[CFS]', ...args);
+    const error = (...args) => console.error('[CFS]', ...args);
+
+    const injectStyle = (css) => {
+        if (typeof GM_addStyle !== 'undefined') {
+            GM_addStyle(css);
+        } else {
+            const style = document.createElement('style');
+            style.textContent = css;
+            (document.head || document.documentElement).appendChild(style);
+        }
+    };
+
+    const fetchText = (url) => {
+        return new Promise((resolve, reject) => {
+            if (typeof GM_xmlhttpRequest === 'undefined') {
+                return fetch(url).then(r => r.text()).then(resolve).catch(reject);
+            }
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: url,
+                onload: (res) => res.status === 200 ? resolve(res.responseText) : reject(res),
+                onerror: reject
+            });
+        });
+    };
+
+    /**
+     * Logic
+     */
+    window.domainConfigCallback = (config) => {
         domainConfig = config;
-        console.log('[CFS] Config loaded:', config.rules.length, 'rules');
+        log('Config loaded:', config.rules.length, 'rules');
         applyStylesheet();
     };
 
-    // Extract hostname from @match pattern
-    function extractHostnameFromPattern(pattern) {
-        const match = pattern.match(/\*:\/\/([^\/]+)/);
-        return match ? match[1] : null;
-    }
-
-    // Get matching rule for current URL
     function getMatchingRule() {
-        if (!domainConfig || !domainConfig.rules) return null;
-
+        if (!domainConfig) return null;
         const hostname = window.location.hostname;
-        for (const rule of domainConfig.rules) {
+        return domainConfig.rules.find(rule => {
             const patterns = rule.domains || rule.match || [];
-            for (const pattern of patterns) {
-                const patternHostname = extractHostnameFromPattern(pattern);
-                if (hostname === patternHostname || hostname.endsWith("." + patternHostname)) {
-                    return rule;
-                }
-            }
-        }
-        return null;
-    }
-
-    // Apply stylesheet
-    function applyStylesheet() {
-        const rule = getMatchingRule();
-        if (!rule) return;
-
-        const cssUrl = cssBaseUrl + '/' + rule.file;
-        if (typeof GM_xmlhttpRequest !== 'undefined') {
-            GM_xmlhttpRequest({
-                method: 'GET',
-                url: cssUrl,
-                onload: function(response) {
-                    if (response.status === 200) {
-                        if (typeof GM_addStyle !== 'undefined') {
-                            GM_addStyle(response.responseText);
-                        } else {
-                            const style = document.createElement('style');
-                            style.textContent = response.responseText;
-                            (document.head || document.documentElement).appendChild(style);
-                        }
-                        console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);
-                    }
-                },
-                onerror: function(err) {
-                    console.error('[CFS] Failed to load CSS:', err);
-                }
+            return patterns.some(p => {
+                const pHost = (p.match(/\*:\/\/([^\/]+)/) || [])[1];
+                return pHost && (hostname === pHost || hostname.endsWith('.' + pHost.replace(/\*\./, '')));
             });
-        } else {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = cssUrl;
-            (document.head || document.documentElement).appendChild(link);
-        }
-    }
-
-    // Load Google Fonts - try @resource first, fallback to link tag
-    function loadFonts() {
-        const rule = getMatchingRule();
-        if (!rule || !rule.fonts) {
-            console.log('[CFS] Fonts disabled for this site');
-            return;
-        }
-        if (typeof GM_getResourceText !== 'undefined') {
-            // Tampermonkey with @resource support
-            try {
-                const fontsText = GM_getResourceText('fonts');
-                GM_addStyle(fontsText);
-                console.log('[CFS] Loaded fonts from @resource');
-            } catch (e) {
-                console.error('[CFS] Failed to load fonts from @resource:', e);
-                loadFontsFallback();
-            }
-        } else {
-            // Fallback for Safari/others
-            loadFontsFallback();
-        }
-    }
-
-    // Fallback: load fonts via link tag
-    function loadFontsFallback() {
-        const fontUrl = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';
-        if (typeof GM_xmlhttpRequest !== 'undefined') {
-            GM_xmlhttpRequest({
-                method: 'GET',
-                url: fontUrl,
-                onload: function(response) {
-                    if (response.status === 200) {
-                        if (typeof GM_addStyle !== 'undefined') {
-                            GM_addStyle(response.responseText);
-                        } else {
-                            const style = document.createElement('style');
-                            style.textContent = response.responseText;
-                            (document.head || document.documentElement).appendChild(style);
-                        }
-                        console.log('[CFS] Loaded fonts via GM_xmlhttpRequest');
-                    }
-                },
-                onerror: function(err) {
-                    console.error('[CFS] Failed to load fonts:', err);
-                }
-            });
-        } else {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = fontUrl;
-            (document.head || document.documentElement).appendChild(link);
-            console.log('[CFS] Loaded fonts via link tag');
-        }
-    }
-
-    // Load config - try @resource first, fallback to GM_xmlhttpRequest
-    function loadConfig() {
-        if (typeof GM_getResourceText !== 'undefined') {
-            // Tampermonkey with @resource support
-            try {
-                const configText = GM_getResourceText('config');
-                eval(configText);
-                console.log('[CFS] Loaded config from @resource');
-            } catch (e) {
-                console.error('[CFS] Failed to load @resource:', e);
-                loadConfigFallback();
-            }
-        } else if (typeof GM_xmlhttpRequest !== 'undefined') {
-            // Fallback for Safari/others
-            loadConfigFallback();
-        }
-    }
-
-    // Fallback: load config via GM_xmlhttpRequest
-    function loadConfigFallback() {
-        console.log('[CFS] Loading config from:', configUrl);
-        GM_xmlhttpRequest({
-            method: 'GET',
-            url: configUrl,
-            onload: function(response) {
-                if (response.status !== 200) {
-                    console.error('[CFS] HTTP error:', response.status, response.statusText);
-                    return;
-                }
-                try {
-                    eval(response.responseText);
-                    console.log('[CFS] Loaded config from CDN');
-                } catch (e) {
-                    console.error('[CFS] Failed to load config:', e);
-                }
-            },
-            onerror: function(err) {
-                    console.error('[CFS] Network error:', err);
-            }
         });
     }
 
-    // Initialize
-    loadConfig();
-    loadFonts();
+    async function applyStylesheet() {
+        const rule = getMatchingRule();
+        if (!rule) return;
+
+        try {
+            const css = await fetchText(`${cssBaseUrl}/${rule.file}`);
+            injectStyle(css);
+            log('Applied style:', rule.file);
+        } catch (e) {
+            error('Failed to apply style:', e);
+        }
+    }
+
+    async function loadFonts() {
+        const rule = getMatchingRule();
+        // Check if fonts are explicitly disabled in rule
+        if (rule && rule.fonts === false) return;
+
+        try {
+            if (typeof GM_getResourceText !== 'undefined') {
+                try {
+                    const fonts = GM_getResourceText('fonts');
+                    if (fonts) {
+                        injectStyle(fonts);
+                        log('Loaded fonts via @resource');
+                        return;
+                    }
+                } catch (e) {}
+            }
+            const fonts = await fetchText(FONT_URL);
+            injectStyle(fonts);
+            log('Loaded fonts via fetch');
+        } catch (e) {
+            error('Failed to load fonts:', e);
+        }
+    }
+
+    async function init() {
+        if (typeof GM_getResourceText !== 'undefined') {
+            try {
+                const configText = GM_getResourceText('config');
+                if (configText) {
+                    eval(configText);
+                    log('Loaded config via @resource');
+                }
+            } catch (e) {
+                error('Failed to load config via @resource:', e);
+            }
+        }
+
+        if (!domainConfig) {
+            try {
+                const configText = await fetchText(configUrl);
+                eval(configText);
+                log('Loaded config via fetch');
+            } catch (e) {
+                error('Failed to load config:', e);
+            }
+        }
+
+        loadFonts();
+    }
+
+    init();
 })();
