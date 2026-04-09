@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Font Styler
 // @namespace    http://tampermonkey.net/
-// @version      0.1.5
+// @version      0.1.6
 // @description  Apply custom fonts and styles to various websites
 // @author       flinhong
 // @homepage     https://github.com/flinhong/userscripts
