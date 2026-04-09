@@ -77,16 +77,26 @@
         if (!rule) return;
 
         const cssUrl = cssBaseUrl + '/' + rule.file;
-        if (typeof GM_addStyle !== 'undefined') {
-            fetch(cssUrl)
-                .then(response => response.text())
-                .then(css => {
-                    GM_addStyle(css);
-                    console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);
-                })
-                .catch(err => {
-                    console.error('[CFS] Failed to load:', err);
-                });
+        if (typeof GM_xmlhttpRequest !== 'undefined') {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: cssUrl,
+                onload: function(response) {
+                    if (response.status === 200) {
+                        if (typeof GM_addStyle !== 'undefined') {
+                            GM_addStyle(response.responseText);
+                        } else {
+                            const style = document.createElement('style');
+                            style.textContent = response.responseText;
+                            (document.head || document.documentElement).appendChild(style);
+                        }
+                        console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);
+                    }
+                },
+                onerror: function(err) {
+                    console.error('[CFS] Failed to load CSS:', err);
+                }
+            });
         } else {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
@@ -120,11 +130,34 @@
 
     // Fallback: load fonts via link tag
     function loadFontsFallback() {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';
-        (document.head || document.documentElement).appendChild(link);
-        console.log('[CFS] Loaded fonts via link tag');
+        const fontUrl = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';
+        if (typeof GM_xmlhttpRequest !== 'undefined') {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: fontUrl,
+                onload: function(response) {
+                    if (response.status === 200) {
+                        if (typeof GM_addStyle !== 'undefined') {
+                            GM_addStyle(response.responseText);
+                        } else {
+                            const style = document.createElement('style');
+                            style.textContent = response.responseText;
+                            (document.head || document.documentElement).appendChild(style);
+                        }
+                        console.log('[CFS] Loaded fonts via GM_xmlhttpRequest');
+                    }
+                },
+                onerror: function(err) {
+                    console.error('[CFS] Failed to load fonts:', err);
+                }
+            });
+        } else {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = fontUrl;
+            (document.head || document.documentElement).appendChild(link);
+            console.log('[CFS] Loaded fonts via link tag');
+        }
     }
 
     // Load config - try @resource first, fallback to GM_xmlhttpRequest

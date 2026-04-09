@@ -147,6 +147,7 @@ uniqueMatches.forEach(function (match) {
 })
 tampermonkeyHeader += '// @grant        GM_getResourceURL\n'
 tampermonkeyHeader += '// @grant        GM_getResourceText\n'
+tampermonkeyHeader += '// @grant        GM_xmlhttpRequest\n'
 tampermonkeyHeader += '// @grant        GM_addStyle\n'
 tampermonkeyHeader += '// @run-at       document-start\n'
 tampermonkeyHeader += '// ==/UserScript=='
@@ -202,19 +203,27 @@ function generateBody(scriptName) {
   body += '        const rule = getMatchingRule();\n'
   body += '        if (!rule) return;\n\n'
   body += "        const cssUrl = cssBaseUrl + '/' + rule.file;\n"
-  body += "        if (typeof GM_addStyle !== 'undefined') {\n"
-  body += '            fetch(cssUrl)\n'
-  body += '                .then(response => response.text())\n'
-  body += '                .then(css => {\n'
-  body += '                    GM_addStyle(css);\n'
-  body +=
-    "                    console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);\n"
-  body += '                })\n'
-  body += '                .catch(err => {\n'
-  body +=
-    "                    console.error('[CFS] Failed to load:', err);\n"
-  body += '                });\n'
-  body += '        } else {\n'
+  body += "        if (typeof GM_xmlhttpRequest !== 'undefined') {\n"
+  body += "            GM_xmlhttpRequest({\n"
+  body += "                method: 'GET',\n"
+  body += "                url: cssUrl,\n"
+  body += "                onload: function(response) {\n"
+  body += "                    if (response.status === 200) {\n"
+  body += "                        if (typeof GM_addStyle !== 'undefined') {\n"
+  body += "                            GM_addStyle(response.responseText);\n"
+  body += "                        } else {\n"
+  body += "                            const style = document.createElement('style');\n"
+  body += "                            style.textContent = response.responseText;\n"
+  body += "                            (document.head || document.documentElement).appendChild(style);\n"
+  body += "                        }\n"
+  body += "                        console.log('[CFS] Loaded:', rule.file, 'for', window.location.hostname);\n"
+  body += "                    }\n"
+  body += "                },\n"
+  body += "                onerror: function(err) {\n"
+  body += "                    console.error('[CFS] Failed to load CSS:', err);\n"
+  body += "                }\n"
+  body += "            });\n"
+  body += "        } else {\n"
   body += "            const link = document.createElement('link');\n"
   body += "            link.rel = 'stylesheet';\n"
   body += '            link.href = cssUrl;\n'
@@ -246,11 +255,34 @@ function generateBody(scriptName) {
   body += "    }\n\n"
   body += '    // Fallback: load fonts via link tag\n'
   body += '    function loadFontsFallback() {\n'
-  body += "        const link = document.createElement('link');\n"
-  body += "        link.rel = 'stylesheet';\n"
-  body += "        link.href = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';\n"
-  body += "        (document.head || document.documentElement).appendChild(link);\n"
-  body += "        console.log('[CFS] Loaded fonts via link tag');\n"
+  body += "        const fontUrl = 'https://cdn.frankindev.com/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap';\n"
+  body += "        if (typeof GM_xmlhttpRequest !== 'undefined') {\n"
+  body += "            GM_xmlhttpRequest({\n"
+  body += "                method: 'GET',\n"
+  body += "                url: fontUrl,\n"
+  body += "                onload: function(response) {\n"
+  body += "                    if (response.status === 200) {\n"
+  body += "                        if (typeof GM_addStyle !== 'undefined') {\n"
+  body += "                            GM_addStyle(response.responseText);\n"
+  body += "                        } else {\n"
+  body += "                            const style = document.createElement('style');\n"
+  body += "                            style.textContent = response.responseText;\n"
+  body += "                            (document.head || document.documentElement).appendChild(style);\n"
+  body += "                        }\n"
+  body += "                        console.log('[CFS] Loaded fonts via GM_xmlhttpRequest');\n"
+  body += "                    }\n"
+  body += "                },\n"
+  body += "                onerror: function(err) {\n"
+  body += "                    console.error('[CFS] Failed to load fonts:', err);\n"
+  body += "                }\n"
+  body += "            });\n"
+  body += "        } else {\n"
+  body += "            const link = document.createElement('link');\n"
+  body += "            link.rel = 'stylesheet';\n"
+  body += "            link.href = fontUrl;\n"
+  body += "            (document.head || document.documentElement).appendChild(link);\n"
+  body += "            console.log('[CFS] Loaded fonts via link tag');\n"
+  body += "        }\n"
   body += "    }\n\n"
   body += '    // Load config - try @resource first, fallback to GM_xmlhttpRequest\n'
   body += '    function loadConfig() {\n'
