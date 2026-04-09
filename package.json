@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "clean": "rm -rf public",
-    "build": "npm run clean && node scripts/build.js",
+    "build": "npm run clean && node scripts/build.js && node scripts/build-imgur.js",
     "release": "standard-version --dry-run",
     "release:minor": "standard-version --release-as minor --dry-run",
     "release:major": "standard-version --release-as major --dry-run",
