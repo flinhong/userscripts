@@ -17,6 +17,10 @@
   --smtc-style-default-header-font-family: var(--font-sans);
 }
 
+html {
+  --bing-smtc-text-style-default-regular-font-family: var(--font-sans);
+}
+
 html,
 body,
 #est_switch .est_common {
