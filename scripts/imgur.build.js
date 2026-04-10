@@ -50,7 +50,7 @@ const imgurUserscriptHeader = `// ==UserScript==
 // @version      ${version}
 // @description  Proxy Imgur images to avoid 403 errors (DuckDuckGo Proxy)
 // @author       Frank Lin
-// @icon         https://frankindev.com/favicon.ico
+// @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://*/*
 // @updateURL    ${CDN_BASE}/public/imgur.userscripts.js
 // @downloadURL  ${CDN_BASE}/public/imgur.userscripts.js

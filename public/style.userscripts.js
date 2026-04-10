@@ -4,7 +4,7 @@
 // @version      0.0.5
 // @description  Apply custom fonts and styles to supported websites
 // @author       Frank Lin
-// @icon         https://frankindev.com/favicon.ico
+// @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://github.com/*

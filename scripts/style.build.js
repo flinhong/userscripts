@@ -24,7 +24,7 @@ const scriptContent = `// ==UserScript==
 // @version      ${version}
 // @description  Apply custom fonts and styles to supported websites
 // @author       Frank Lin
-// @icon         https://frankindev.com/favicon.ico
+// @icon         https://frankindev.com/assets/img/logo.svg
 ${matchLines}
 // @updateURL    ${CDN_BASE}/public/style.userscripts.js
 // @downloadURL  ${CDN_BASE}/public/style.userscripts.js
