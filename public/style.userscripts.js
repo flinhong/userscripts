@@ -44,6 +44,9 @@
             url: BASE_URL + '/styles/' + file,
             onload: function(response) {
                 GM.addStyle(response.responseText);
+            },
+            onerror: function(response) {
+                console.error('Failed to load CSS:', file);
             }
         });
     }
@@ -52,15 +55,22 @@
         method: 'GET',
         url: BASE_URL + '/domain.json',
         onload: function(response) {
-            const config = JSON.parse(response.responseText);
-            for (const rule of config.rules) {
-                for (const pattern of rule.match) {
-                    if (matchesPattern(hostname, pattern)) {
-                        loadCSS(rule.file);
-                        return;
+            try {
+                const config = JSON.parse(response.responseText);
+                for (const rule of config.rules) {
+                    for (const pattern of rule.match) {
+                        if (matchesPattern(hostname, pattern)) {
+                            loadCSS(rule.file);
+                            return;
+                        }
                     }
                 }
+            } catch (e) {
+                console.error('Failed to load config:', response.responseText);
             }
+        },
+        onerror: function(response) {
+            console.error('Failed to load domain.json from', BASE_URL);
         }
     });
 })();
