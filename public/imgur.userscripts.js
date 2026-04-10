@@ -3,7 +3,8 @@
 // @namespace    https://github.com/flinhong/userscripts
 // @version      0.0.3
 // @description  Proxy Imgur images to avoid 403 errors (DuckDuckGo Proxy)
-// @author       flinhong
+// @author       Frank Lin
+// @icon         https://frankindev.com/favicon.ico
 // @match        *://*/*
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js

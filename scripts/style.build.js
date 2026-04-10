@@ -23,7 +23,8 @@ const scriptContent = `// ==UserScript==
 // @namespace    https://github.com/flinhong/userscripts
 // @version      ${version}
 // @description  Apply custom fonts and styles to supported websites
-// @author       flinhong
+// @author       Frank Lin
+// @icon         https://frankindev.com/favicon.ico
 ${matchLines}
 // @updateURL    ${CDN_BASE}/public/style.userscripts.js
 // @downloadURL  ${CDN_BASE}/public/style.userscripts.js

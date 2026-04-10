@@ -49,7 +49,8 @@ const imgurUserscriptHeader = `// ==UserScript==
 // @namespace    https://github.com/flinhong/userscripts
 // @version      ${version}
 // @description  Proxy Imgur images to avoid 403 errors (DuckDuckGo Proxy)
-// @author       flinhong
+// @author       Frank Lin
+// @icon         https://frankindev.com/favicon.ico
 // @match        *://*/*
 // @updateURL    ${CDN_BASE}/public/imgur.userscripts.js
 // @downloadURL  ${CDN_BASE}/public/imgur.userscripts.js

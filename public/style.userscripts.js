@@ -3,7 +3,8 @@
 // @namespace    https://github.com/flinhong/userscripts
 // @version      0.0.3
 // @description  Apply custom fonts and styles to supported websites
-// @author       flinhong
+// @author       Frank Lin
+// @icon         https://frankindev.com/favicon.ico
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://github.com/*
