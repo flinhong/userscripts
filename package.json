@@ -4,16 +4,7 @@
   "description": "custom userscripts for better experience",
   "scripts": {
     "clean": "rm -rf public",
-    "build": "npm run clean && node scripts/build.js",
-    "precommit": "npm run build",
-    "release": "standard-version",
-    "release:patch": "standard-version --release-as patch",
-    "release:minor": "standard-version --release-as minor",
-    "release:major": "standard-version --release-as major",
-    "release:preview": "standard-version --dry-run",
-    "release:preview:patch": "standard-version --release-as patch --dry-run",
-    "release:preview:minor": "standard-version --release-as minor --dry-run",
-    "release:preview:major": "standard-version --release-as major --dry-run",
+    "build": "npm run clean && node scripts/style.build.js && node scripts/imgur.build.js",
     "release:ci": "standard-version && npm run build && git add -A && git commit -m \"chore: build files [skip ci]\" && git push origin --follow-tags"
   },
   "repository": {

@@ -27,57 +27,15 @@ Install scripts directly from CDN:
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Build scripts (outputs to public/)
 npm run build
 ```
 
-## Configuration
-
-Edit `configs/domain.json` to add or modify domain rules:
-
-```json
-{
-  "rules": [
-    {
-      "file": "google.css",
-      "match": ["*://www.google.com/*"]
-    }
-  ]
-}
-```
-
-Add corresponding CSS file in `configs/styles/` directory.
-
-## Release Process
-
-### Preview Version Bump
-
-Dry-run commands show what version bump would happen:
-
-```bash
-npm run release:preview              # Preview patch bump (0.0.1 → 0.0.2)
-npm run release:preview:patch         # Preview patch bump
-npm run release:preview:minor         # Preview minor bump (0.0.1 → 0.1.0)
-npm run release:preview:major         # Preview major bump (0.0.1 → 1.0.0)
-```
-
-### Local Release
-
-```bash
-npm run release:patch                 # Create patch release (0.0.1 → 0.0.2)
-npm run release:minor                 # Create minor release (0.0.1 → 0.1.0)
-npm run release:major                 # Create major release (0.0.1 → 1.0.0)
-```
-
-### Automated Release (CI)
+## Release (CI)
 
 Push a tag to trigger GitHub Actions:
 
 ```bash
-# Tag format: v{version}
 git tag v0.0.2
 git push origin --tags
 ```
