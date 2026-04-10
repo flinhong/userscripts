@@ -17,7 +17,7 @@ const matchPatterns = [...new Set(domainConfig.rules.flatMap(rule => rule.match)
 // 生成 @match 行
 const matchLines = matchPatterns.map(p => `// @match        ${p}`).join('\n');
 
-// 生成脚本内容（版本号在构建时替换）
+// 生成脚本内容
 const scriptContent = `// ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
