@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      0.0.1
+// @version      0.0.2
 // @description  Apply custom fonts and styles to supported websites
 // @author       flinhong
 // @match        *://baidu.com/*
@@ -25,7 +25,7 @@
 (function() {
     'use strict';
 
-    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts/@v0.0.1/public';
+    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts/@v0.0.2/public';
 
     const hostname = window.location.hostname;
 

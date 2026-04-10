@@ -1,6 +1,6 @@
 {
   "name": "userscripts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "custom userscripts for better experience",
   "scripts": {
     "clean": "rm -rf public",
@@ -20,7 +20,10 @@
     "type": "git",
     "url": "git+https://github.com/flinhong/userscripts.git"
   },
-  "keywords": ["userscripts", "tampermonkey"],
+  "keywords": [
+    "userscripts",
+    "tampermonkey"
+  ],
   "author": "Frank Lin",
   "license": "MIT",
   "type": "commonjs",
