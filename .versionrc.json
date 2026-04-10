@@ -13,8 +13,5 @@
   "skip": {
     "commit": true,
     "changelog": true
-  },
-  "scripts": {
-    "postbump": "node scripts/build.js && git add -A && git commit -m \"chore: build files [skip ci]\""
   }
 }

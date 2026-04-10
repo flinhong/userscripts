@@ -1,24 +1,28 @@
 {
   "name": "userscripts",
-  "version": "0.1.9",
-  "description": "userscripts for styling web with custom fonts",
-  "main": "src/main.js",
+  "version": "0.0.1",
+  "description": "custom userscripts for better experience",
   "scripts": {
     "clean": "rm -rf public",
-    "build": "npm run clean && node scripts/build.js && node scripts/build-imgur.js",
-    "release": "standard-version --dry-run",
-    "release:minor": "standard-version --release-as minor --dry-run",
-    "release:major": "standard-version --release-as major --dry-run",
-    "release:patch": "standard-version --release-as patch --dry-run",
-    "release:ci": "standard-version && git push origin --follow-tags"
+    "build": "npm run clean && node scripts/build.js",
+    "precommit": "npm run build",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "release:preview": "standard-version --dry-run",
+    "release:preview:patch": "standard-version --release-as patch --dry-run",
+    "release:preview:minor": "standard-version --release-as minor --dry-run",
+    "release:preview:major": "standard-version --release-as major --dry-run",
+    "release:ci": "standard-version && npm run build && git add -A && git commit -m \"chore: build files [skip ci]\" && git push origin --follow-tags"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/flinhong/userscripts.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["userscripts", "tampermonkey"],
+  "author": "Frank Lin",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/flinhong/userscripts/issues"

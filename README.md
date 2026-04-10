@@ -1,40 +1,28 @@
-# Custom Font Styler
+# Custom Userscripts
 
-A userscript that applies custom fonts and styles to various websites.
+Custom userscripts that applies custom functions to various websites.
 
 ## Features
 
-- Apply custom fonts to supported websites
-- Smooth font transitions
-- Configurable per-domain styling
+### Custom Styles
+
+- Apply custom fonts and styles to supported websites
+- Configurable per-domain styling via `configs/domain.json`
 - Support for Tampermonkey and Safari userscripts
 - CDN-hosted resources with versioned URLs
 
+### Imgur Proxy
+
+- Replace imgur images address with DuckDuckGo proxy to avoid 403 errors
+
 ## Installation
 
-### Tampermonkey
+Install scripts directly from CDN:
 
-1. Install [Tampermonkey](https://www.tampermonkey.net/)
-2. Install the script:
-   ```
-   https://cdn.frankindev.com/statically/gh/flinhong/userscripts/main/tampermonkey.js
-   ```
-
-### Safari
-
-1. Install [Userscripts](https://apps.apple.com/app/userscripts/id1463298887)
-2. Install the script:
-   ```
-   https://cdn.frankindev.com/statically/gh/flinhong/userscripts/main/userscripts.js
-   ```
-
-## Supported Sites
-
-- Baidu
-- GitHub
-- Bing
-- Google
-- ChatGPT
+| Script | URL |
+|--------|-----|
+| Custom Styles | [style.userscripts.js](https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js) |
+| Imgur Proxy | [imgur.userscripts.js](https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js) |
 
 ## Development
 
@@ -42,49 +30,66 @@ A userscript that applies custom fonts and styles to various websites.
 # Install dependencies
 npm install
 
-# Build scripts
+# Build scripts (outputs to public/)
 npm run build
 ```
 
-## Release Process
+## Configuration
 
-### Local Development (Dry-Run)
+Edit `configs/domain.json` to add or modify domain rules:
 
-Local release commands use `--dry-run` mode, which only shows what would happen without making actual changes:
-
-```bash
-npm run release              # Preview version bump from commits
-npm run release:patch        # Preview 1.0.0 → 1.0.1
-npm run release:minor        # Preview 1.0.0 → 1.1.0
-npm run release:major        # Preview 1.0.0 → 2.0.0
+```json
+{
+  "rules": [
+    {
+      "file": "google.css",
+      "match": ["*://www.google.com/*"]
+    }
+  ]
+}
 ```
 
-### Automated Release
+Add corresponding CSS file in `configs/styles/` directory.
 
-The project uses GitHub Actions for automated release. Simply:
+## Release Process
 
-1. Commit your changes with conventional commit messages:
+### Preview Version Bump
 
-   ```bash
-   git commit -m "feat: add new feature"
-   git commit -m "fix: correct bug"
-   ```
+Dry-run commands show what version bump would happen:
 
-2. Push to `main` branch:
+```bash
+npm run release:preview              # Preview patch bump (0.0.1 → 0.0.2)
+npm run release:preview:patch         # Preview patch bump
+npm run release:preview:minor         # Preview minor bump (0.0.1 → 0.1.0)
+npm run release:preview:major         # Preview major bump (0.0.1 → 1.0.0)
+```
 
-   ```bash
-   git push origin main
-   ```
+### Local Release
 
-3. GitHub Actions will:
-   - Automatically bump version based on commit messages
-   - Build the project with the new version
-   - Commit build files
-   - Create a git tag
-   - Push to remote
-   - Keep only the 10 most recent tags
+```bash
+npm run release:patch                 # Create patch release (0.0.1 → 0.0.2)
+npm run release:minor                 # Create minor release (0.0.1 → 0.1.0)
+npm run release:major                 # Create major release (0.0.1 → 1.0.0)
+```
 
-### Commit Message Format
+### Automated Release (CI)
+
+Push a tag to trigger GitHub Actions:
+
+```bash
+# Tag format: v{version}
+git tag v0.0.2
+git push origin --tags
+```
+
+CI will:
+1. Update `package.json` version
+2. Build scripts with new version
+3. Commit build files
+4. Create git tag
+5. Push to remote
+
+## Commit Message Format
 
 | Type       | Description   | Version Bump |
 | ---------- | ------------- | ------------ |
@@ -99,75 +104,41 @@ The project uses GitHub Actions for automated release. Simply:
 
 Examples:
 
-- `feat: add support for new website`
-- `fix: correct font loading issue`
-- `feat!: breaking API changes`
-- `fix!: security patch`
+```bash
+git commit -m "feat: add support for new website"
+git commit -m "fix: correct font loading issue"
+git commit -m "feat!: breaking API changes"
+git commit -m "fix!: security patch"
+```
 
-### CDN Versioning
+## CDN Versioning
 
-After release, resources are available via CDN using the `@version` syntax:
+Resources are available via CDN with versioned URLs:
 
-- `.../public/tampermonkey.js` (latest)
-- `.../public/userscripts.js` (latest)
-- `...@v1.0.1/public/domain.jsonp`
-- `...@v1.0.1/public/styles/*.css`
+```
+https://cdn.frankindev.com/statically/gh/flinhong/userscripts/@v{version}/public/style.userscripts.js
+https://cdn.frankindev.com/statically/gh/flinhong/userscripts/@v{version}/public/domain.json
+https://cdn.frankindev.com/statically/gh/flinhong/userscripts/@v{version}/public/styles/*.css
+```
 
-### Tag Operations
-
-**List all tags:**
+## Tag Operations
 
 ```bash
+# List all tags
 git tag
-```
 
-**View tag details:**
-
-```bash
+# View tag details
 git show v1.0.1
-```
 
-**Delete a tag locally:**
-
-```bash
+# Delete tag locally
 git tag -d v1.0.1
-```
 
-**Delete a tag from remote:**
-
-```bash
+# Delete tag from remote
 git push origin :refs/tags/v1.0.1
-```
 
-**Push a specific tag:**
-
-```bash
+# Push specific tag
 git push origin v1.0.1
 ```
-
-**Re-create a tag:**
-
-```bash
-# If you need to undo a release
-git tag -d v1.0.1                    # Delete local tag
-git push origin :refs/tags/v1.0.1     # Delete remote tag
-npm run release:patch                 # Re-create release
-git push origin main --follow-tags     # Push again
-```
-
-### Rolling Back a Release
-
-If you need to undo a release:
-
-1. Delete the tag locally and remotely:
-   ```bash
-   git tag -d v1.0.1
-   git push origin :refs/tags/v1.0.1
-   ```
-2. Restore the code to previous version if needed:
-   ```bash
-   git checkout v1.0.0
-   ```
 
 ## License
 
