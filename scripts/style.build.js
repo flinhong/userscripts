@@ -36,7 +36,7 @@ ${matchLines}
 (function() {
     'use strict';
 
-    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts/@v${version}/public';
+    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v${version}/public';
 
     const hostname = window.location.hostname;
 
