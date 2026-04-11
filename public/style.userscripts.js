@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      0.0.6
+// @version      0.0.7
 // @description  Apply custom fonts and styles to supported websites
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
@@ -25,11 +25,11 @@
 (function() {
     'use strict';
 
-    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v0.0.6/public';
+    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v0.0.7/public';
 
     const hostname = window.location.hostname;
 
-    console.log('[Custom Styles] Script loaded, version 0.0.6');
+    console.log('[Custom Styles] Script loaded, version 0.0.7');
     console.log('[Custom Styles] Hostname:', hostname);
     console.log('[Custom Styles] Base URL:', BASE_URL);
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Imgur Proxy Fix
 // @namespace    https://github.com/flinhong/userscripts
-// @version      0.0.6
+// @version      0.0.7
 // @description  Proxy Imgur images to avoid 403 errors (DuckDuckGo Proxy)
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
