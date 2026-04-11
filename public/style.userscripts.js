@@ -33,74 +33,53 @@
     const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v' + version + '/public';
 
     const hostname = window.location.hostname;
-
-    console.log('[Custom Styles] Script loaded, version ' + version);
-    console.log('[Custom Styles] Hostname:', hostname);
-    console.log('[Custom Styles] Base URL:', BASE_URL);
+    console.log('[Custom Styles] v' + version + ' | ' + hostname);
 
     function matchHostname(hostname, pattern) {
-        // pattern: "*://domain.com/*" or "*://*.domain.com/*"
         const regex = pattern
-            .replace(/^\*?:\/\//, '')  // remove "*://"
-            .replace(/\/\*$/, '')      // remove "/*"
-            .replace(/\./g, '.')        // restore dots
-            .replace(/\*/g, '.*');     // wildcards
-        const result = new RegExp('^' + regex + '$').test(hostname);
-        console.log('[Custom Styles] Testing pattern:', pattern, '->', result ? 'MATCH' : 'no');
-        return result;
+            .replace(/^\*?:\/\//, '')
+            .replace(/\/\*$/, '')
+            .replace(/\./g, '.')
+            .replace(/\*/g, '.*');
+        return new RegExp('^' + regex + '$').test(hostname);
     }
 
     function loadCSS(file, css) {
         const style = document.createElement('style');
         style.textContent = css;
         document.head.appendChild(style);
-        console.log('[Custom Styles] CSS applied:', file);
+        console.log('[Custom Styles] CSS loaded:', file);
     }
 
-    function fetchCSS(file) {
-        console.log('[Custom Styles] Fetching CSS:', file);
-        GM.xmlHttpRequest({
-            method: 'GET',
-            url: BASE_URL + '/styles/' + file,
-            onload: function(response) {
-                loadCSS(file, response.responseText);
-            },
-            onerror: function(response) {
-                console.error('[Custom Styles] Failed to load CSS:', file);
-            }
-        });
-    }
-
-    console.log('[Custom Styles] Loading domain config...');
     GM.xmlHttpRequest({
         method: 'GET',
         url: BASE_URL + '/domain.json',
         onload: function(response) {
             try {
                 const config = JSON.parse(response.responseText);
-                let matched = false;
-                console.log('[Custom Styles] Checking rules...');
                 for (const rule of config.rules) {
-                    console.log('[Custom Styles] Rule file:', rule.file, 'patterns:', rule.match);
                     for (const pattern of rule.match) {
                         if (matchHostname(hostname, pattern)) {
-                            console.log('[Custom Styles] -> Matched:', pattern);
-                            fetchCSS(rule.file);
-                            matched = true;
-                            break;
+                            GM.xmlHttpRequest({
+                                method: 'GET',
+                                url: BASE_URL + '/styles/' + rule.file,
+                                onload: function(res) {
+                                    loadCSS(rule.file, res.responseText);
+                                },
+                                onerror: function() {
+                                    console.error('[Custom Styles] Failed to load:', rule.file);
+                                }
+                            });
+                            return;
                         }
                     }
-                    if (matched) break;
-                }
-                if (!matched) {
-                    console.log('[Custom Styles] No matching pattern found');
                 }
             } catch (e) {
-                console.error('[Custom Styles] Config parse error:', e.message);
+                console.error('[Custom Styles] Config error:', e.message);
             }
         },
-        onerror: function(response) {
-            console.error('[Custom Styles] Failed to load domain.json from', BASE_URL);
+        onerror: function() {
+            console.error('[Custom Styles] Failed to load domain.json');
         }
     });
 })();
