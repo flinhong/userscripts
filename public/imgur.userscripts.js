@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Imgur Proxy Fix
+// @name         Imgur Proxy
 // @namespace    https://github.com/flinhong/userscripts
 // @version      0.0.9
-// @description  Proxy Imgur images to avoid 403 errors (DuckDuckGo Proxy)
+// @description  Proxy Imgur images to avoid 403 errors
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://*/*
@@ -15,32 +15,36 @@
 (function() {
     'use strict';
 
-    const PROXY = 'https://proxy.duckduckgo.com/iu/?u=';
-    const IS_IMGUR = /^https?:\/\/(?:[a-z0-9-.]+\.)?imgur\.com\//i;
+    const PROXY = 'https://cdn.frankindev.com/images/ddg/?u=';
+    const IMGUR_RE = /^https?:\/\/(?:[a-z0-9-.]+\.)?imgur\.com\//i;
 
     const fixImage = (img) => {
-        const src = img.src || img.srcset;
-        if (src && IS_IMGUR.test(src)) {
-            const url = src.split(' ')[0];
-            img.src = PROXY + encodeURIComponent(url);
-            if (img.srcset) {
-                img.srcset = img.srcset.split(',').map(s => {
-                    const [url, dpr] = s.trim().split(' ');
-                    return IS_IMGUR.test(url) ? (PROXY + encodeURIComponent(url) + (dpr ? ' ' + dpr : '')) : s;
-                }).join(', ');
-            }
+        if (img.src && IMGUR_RE.test(img.src)) {
+            img.src = PROXY + encodeURIComponent(img.src);
+        }
+        if (img.srcset) {
+            const newSrcset = img.srcset.split(',').map(s => {
+                const [url, dpr] = s.trim().split(' ');
+                if (url && IMGUR_RE.test(url)) {
+                    return PROXY + encodeURIComponent(url) + (dpr ? ' ' + dpr : '');
+                }
+                return s;
+            }).join(', ');
+            img.srcset = newSrcset;
         }
     };
 
     const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-                if (node.tagName === 'IMG') fixImage(node);
-                else if (node.querySelectorAll) {
-                    node.querySelectorAll('img').forEach(fixImage);
+        for (const mutation of mutations) {
+            for (const node of mutation.addedNodes) {
+                if (node.nodeType !== 1) continue;
+                if (node.tagName === 'IMG') {
+                    fixImage(node);
+                } else {
+                    node.querySelectorAll?.('img').forEach(fixImage);
                 }
-            });
-        });
+            }
+        }
     });
 
     document.querySelectorAll('img').forEach(fixImage);
