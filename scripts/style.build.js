@@ -29,7 +29,6 @@ ${matchLines}
 // @updateURL    ${CDN_BASE}/public/style.userscripts.js
 // @downloadURL  ${CDN_BASE}/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
-// @grant        GM.addStyle
 // @run-at       document-start
 // ==/UserScript==
 
@@ -40,6 +39,10 @@ ${matchLines}
 
     const hostname = window.location.hostname;
 
+    console.log('[Custom Styles] Script loaded, version ${version}');
+    console.log('[Custom Styles] Hostname:', hostname);
+    console.log('[Custom Styles] Base URL:', BASE_URL);
+
     function matchesPattern(hostname, pattern) {
         const regex = pattern
             .replace(/\\./g, '\\\\.')
@@ -48,39 +51,55 @@ ${matchLines}
         return new RegExp('^' + regex + '$').test('https://' + hostname);
     }
 
-    function loadCSS(file) {
+    function loadCSS(file, css) {
+        const style = document.createElement('style');
+        style.textContent = css;
+        document.head.appendChild(style);
+        console.log('[Custom Styles] CSS applied:', file);
+    }
+
+    function fetchCSS(file) {
+        console.log('[Custom Styles] Fetching CSS:', file);
         GM.xmlHttpRequest({
             method: 'GET',
             url: BASE_URL + '/styles/' + file,
             onload: function(response) {
-                GM.addStyle(response.responseText);
+                loadCSS(file, response.responseText);
             },
             onerror: function(response) {
-                console.error('Failed to load CSS:', file);
+                console.error('[Custom Styles] Failed to load CSS:', file);
             }
         });
     }
 
+    console.log('[Custom Styles] Loading domain config...');
     GM.xmlHttpRequest({
         method: 'GET',
         url: BASE_URL + '/domain.json',
         onload: function(response) {
             try {
                 const config = JSON.parse(response.responseText);
+                let matched = false;
                 for (const rule of config.rules) {
                     for (const pattern of rule.match) {
                         if (matchesPattern(hostname, pattern)) {
-                            loadCSS(rule.file);
-                            return;
+                            console.log('[Custom Styles] Pattern matched:', pattern);
+                            fetchCSS(rule.file);
+                            matched = true;
+                            break;
                         }
                     }
+                    if (matched) break;
+                }
+                if (!matched) {
+                    console.log('[Custom Styles] No matching pattern found');
                 }
             } catch (e) {
-                console.error('Failed to load config:', response.responseText);
+                console.error('[Custom Styles] Config parse error:', e.message);
             }
         },
         onerror: function(response) {
-            console.error('Failed to load domain.json from', BASE_URL);
+            console.error('[Custom Styles] Failed to load domain.json from', BASE_URL);
         }
     });
 })();
