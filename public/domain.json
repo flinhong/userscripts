@@ -5,6 +5,10 @@
       "match": ["*://baidu.com/*", "*://www.baidu.com/*"]
     },
     {
+      "file": "news.baidu.css",
+      "match": ["*://news.baidu.com/*"]
+    },
+    {
       "file": "github.css",
       "match": ["*://github.com/*"]
     },

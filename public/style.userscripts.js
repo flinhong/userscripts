@@ -7,6 +7,7 @@
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
+// @match        *://news.baidu.com/*
 // @match        *://github.com/*
 // @match        *://www.zhihu.com/*
 // @match        *://bing.com/*
@@ -25,20 +26,28 @@
 (function() {
     'use strict';
 
-    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v0.0.7/public';
+    // Extract version from metadata at runtime
+    const scriptMetaStr = GM.info.scriptMetaStr;
+    const versionMatch = scriptMetaStr.match(/@version\s+(.+)/);
+    const version = versionMatch ? versionMatch[1].trim() : 'unknown';
+    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v' + version + '/public';
 
     const hostname = window.location.hostname;
 
-    console.log('[Custom Styles] Script loaded, version 0.0.7');
+    console.log('[Custom Styles] Script loaded, version ' + version);
     console.log('[Custom Styles] Hostname:', hostname);
     console.log('[Custom Styles] Base URL:', BASE_URL);
 
-    function matchesPattern(hostname, pattern) {
+    function matchHostname(hostname, pattern) {
+        // pattern: "*://domain.com/*" or "*://*.domain.com/*"
         const regex = pattern
-            .replace(/\./g, '\\.')
-            .replace(/\*/g, '.*')
-            .replace(/\?/g, '.');
-        return new RegExp('^' + regex + '$').test('https://' + hostname);
+            .replace(/^\*?:\/\//, '')  // remove "*://"
+            .replace(/\/\*$/, '')      // remove "/*"
+            .replace(/\./g, '.')        // restore dots
+            .replace(/\*/g, '.*');     // wildcards
+        const result = new RegExp('^' + regex + '$').test(hostname);
+        console.log('[Custom Styles] Testing pattern:', pattern, '->', result ? 'MATCH' : 'no');
+        return result;
     }
 
     function loadCSS(file, css) {
@@ -70,10 +79,12 @@
             try {
                 const config = JSON.parse(response.responseText);
                 let matched = false;
+                console.log('[Custom Styles] Checking rules...');
                 for (const rule of config.rules) {
+                    console.log('[Custom Styles] Rule file:', rule.file, 'patterns:', rule.match);
                     for (const pattern of rule.match) {
-                        if (matchesPattern(hostname, pattern)) {
-                            console.log('[Custom Styles] Pattern matched:', pattern);
+                        if (matchHostname(hostname, pattern)) {
+                            console.log('[Custom Styles] -> Matched:', pattern);
                             fetchCSS(rule.file);
                             matched = true;
                             break;
