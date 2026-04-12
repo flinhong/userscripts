@@ -83,7 +83,13 @@ ${matchLines}
         url: BASE_URL + '/domain.json',
         onload: function(response) {
             try {
-                const config = JSON.parse(response.responseText);
+                // 验证响应是有效的 JSON
+                const text = response.responseText;
+                if (!text || typeof text !== 'string' || !text.trim().startsWith('{')) {
+                    console.error('[Custom Styles] Invalid config response:', text ? text.substring(0, 100) : 'empty');
+                    return;
+                }
+                const config = JSON.parse(text);
                 for (const rule of config.rules) {
                     for (const pattern of rule.match) {
                         if (matchHostname(hostname, pattern)) {
