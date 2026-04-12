@@ -63,7 +63,7 @@
         try {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'data:text/css;base64,' + btoa(unescape(encodeURIComponent(css)));
+            link.href = 'data:text/css;base64,' + btoa(encodeURIComponent(css));
             document.head.appendChild(link);
             console.log('[Custom Styles] CSS loaded via <link> fallback:', file);
         } catch (e) {
