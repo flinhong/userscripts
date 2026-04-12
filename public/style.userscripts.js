@@ -21,6 +21,7 @@
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
 // @run-at       document-start
+// @inject-into  content
 // ==/UserScript==
 
 (function() {

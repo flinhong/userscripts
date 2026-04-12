@@ -10,6 +10,7 @@
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
 // @grant        none
 // @run-at       document-start
+// @inject-into  content
 // ==/UserScript==
 
 (function() {

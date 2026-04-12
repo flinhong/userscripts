@@ -60,6 +60,7 @@ const imgurUserscriptHeader = `// ==UserScript==
 // @downloadURL  ${CDN_BASE}/public/imgur.userscripts.js
 // @grant        none
 // @run-at       document-start
+// @inject-into  content
 // ==/UserScript==
 
 `;
