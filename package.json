@@ -1,6 +1,6 @@
 {
   "name": "userscripts",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "custom userscripts for better experience",
   "scripts": {
     "clean": "rm -rf public",
