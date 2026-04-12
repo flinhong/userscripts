@@ -20,8 +20,9 @@
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
+// @grant        GM.addStyle
 // @run-at       document-start
-// @inject-into  content
+// @inject-into  auto
 // ==/UserScript==
 
 (function() {
@@ -46,10 +47,28 @@
     }
 
     function loadCSS(file, css) {
-        const style = document.createElement('style');
-        style.textContent = css;
-        document.head.appendChild(style);
-        console.log('[Custom Styles] CSS loaded:', file);
+        // 方案 1: 优先使用 GM.addStyle（扩展 API，最佳方案）
+        if (typeof GM !== 'undefined' && GM.addStyle) {
+            GM.addStyle(css)
+                .then(() => console.log('[Custom Styles] CSS loaded via GM.addStyle:', file))
+                .catch(() => fallbackLinkInject(file, css));
+        } else {
+            // GM.addStyle 不可用，直接使用 fallback
+            fallbackLinkInject(file, css);
+        }
+    }
+
+    // Fallback: 通过 <link data URI> 注入
+    function fallbackLinkInject(file, css) {
+        try {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'data:text/css;base64,' + btoa(unescape(encodeURIComponent(css)));
+            document.head.appendChild(link);
+            console.log('[Custom Styles] CSS loaded via <link> fallback:', file);
+        } catch (e) {
+            console.error('[Custom Styles] All injection methods failed for:', file, e);
+        }
     }
 
     GM.xmlHttpRequest({
