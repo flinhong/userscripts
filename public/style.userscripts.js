@@ -17,6 +17,7 @@
 // @match        *://www.google.co.uk/*
 // @match        *://www.google.com.hk/*
 // @match        *://chatgpt.com/*
+// @match        *://www.reddit.com/*
 // @match        *://chat.deepseek.com/*
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js

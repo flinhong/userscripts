@@ -34,6 +34,10 @@
       "match": ["*://chatgpt.com/*"]
     },
     {
+      "file": "reddit.css",
+      "match": ["*://www.reddit.com/*"]
+    },
+    {
       "file": "deepseek.css",
       "match": ["*://chat.deepseek.com/*"]
     }
