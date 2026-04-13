@@ -31,9 +31,21 @@
     'use strict';
 
     // Extract version from metadata at runtime
-    const scriptMetaStr = GM.info.scriptMetaStr;
-    const versionMatch = scriptMetaStr.match(/@version\s+(.+)/);
-    const version = versionMatch ? versionMatch[1].trim() : 'unknown';
+    let version = 'unknown';
+    try {
+        // GM.info.script.version - 直接获取脚本版本
+        if (GM.info?.script?.version) {
+            version = GM.info.script.version;
+        } else if (GM.info?.scriptMetaStr) {
+            // Fallback: 从 scriptMetaStr 解析
+            const versionMatch = GM.info.scriptMetaStr.match(/@versions+(.+)/);
+            if (versionMatch) {
+                version = versionMatch[1].trim();
+            }
+        }
+    } catch (e) {
+        console.error('[Custom Styles] Failed to get version:', e.message);
+    }
     const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v' + version + '/public';
 
     const hostname = window.location.hostname;
