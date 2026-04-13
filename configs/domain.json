@@ -32,6 +32,10 @@
     {
       "file": "chatgpt.css",
       "match": ["*://chatgpt.com/*"]
+    },
+    {
+      "file": "deepseek.css",
+      "match": ["*://chat.deepseek.com/*"]
     }
   ]
 }
