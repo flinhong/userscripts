@@ -23,7 +23,7 @@
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
 // @grant        GM.addStyle
-// @run-at       document-start
+// @run-at       document-end
 // @inject-into  auto
 // ==/UserScript==
 
@@ -60,7 +60,7 @@
         }
     }
 
-    // Fallback: 通过 <link data URI> 注入
+    // Fallback: 通过 <link data URI> 注入到 head 底部
     function fallbackLinkInject(file, css) {
         try {
             const link = document.createElement('link');
