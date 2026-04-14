@@ -1,21 +1,28 @@
+/* ============================================
+   1. 字体变量定义
+   ============================================ */
 :root {
   --font-sans:
     "Outfit", "Noto Serif SC", -apple-system, "BlinkMacSystemFont", "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif !important;
   --font-serif:
     "Crimson Text", "Noto Serif SC", "Georgia", "Cambria", "Times New Roman",
-    "Times", serif;
+    "Times", serif !important;
   --font-mono:
     "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SFMono-Regular", "Menlo",
-    "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
+    "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace !important;
 }
 
-/* Smooth font transition */
+/* ============================================
+   2. 全局过渡效果（可选，注释掉以提升性能）
+   ============================================ */
 * {
   transition: font-family 0.2s ease-in-out;
 }
 
-/* Sans Serif Fonts */
+/* ============================================
+   3. Sans Serif 字体应用
+   ============================================ */
 #s-top-left .c-font-normal,
 .wrapper_new,
 #container,
@@ -29,20 +36,26 @@
 .cosd-question-guide-title,
 .cosd-question-guide-title-icon,
 .wrapper_new #u .s-top-username,
-#right-tool *,
-#left-tool *,
-.panel-list_8jHmm *,
+#right-tool,
+#left-tool,
+.panel-list_8jHmm,
 .cu-font-base,
 ._paragraph_10ku5_2,
 .pc-rg-upgrade_2X3zi .item_3WKCf,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
-#right-tool :not(.cos-icon),
-#left-tool :not(.cos-icon),
-.panel-list_8jHmm :not(.cos-icon) {
-  font-family: var(--font-sans) !important;
+.pc-rs-upgrade_3SRoo .rs-link_2DE3Q {
+  font-family: var(--font-sans);
 }
 
-/* Serif Fonts */
+/* 排除图标元素 */
+#right-tool .cos-icon,
+#left-tool .cos-icon,
+.panel-list_8jHmm .cos-icon {
+  font-family: inherit;
+}
+
+/* ============================================
+   4. Serif 字体应用
+   ============================================ */
 body,
 button,
 input,
@@ -57,25 +70,29 @@ em,
 #container .c-title,
 .cos-text-body,
 .cos-text-body-lg,
-.new-pmd .c-font-medium,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
 .cosd-markdown .marklang .marklang-paragraph,
 .jump-btn_4WUGP,
-.pc-fresh-title-con #container.sam_newgrid .c-container .c-group-title,
 .cosc-title,
 .cosc-title-a,
-a.cosc-title-a .cosc-title-slot,
 .cos-more-link-text,
-.pc-rg-upgrade_2X3zi .item_3WKCf,
 .c-color-link.cos-font-medium {
-  font-family: var(--font-serif) !important;
+  font-family: var(--font-serif);
 }
 
-/* Mono Fonts */
+/* 特殊处理：搜索结果标题链接 */
+.cos-text-body a,
+.cos-text-body-lg a,
+.c-title a {
+  font-family: var(--font-serif);
+}
+
+/* ============================================
+   5. Mono 字体应用（代码/来源信息）
+   ============================================ */
 .s-bottom-layer-content,
 #page.page-sample,
 .cosc-source-caption,
 .cosc-source-text,
-.cosc-source-a.cosc-source-link {
-  font-family: var(--font-mono) !important;
+.cosc-source-a.cos-source-link {
+  font-family: var(--font-mono);
 }
