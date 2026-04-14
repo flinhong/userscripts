@@ -40,9 +40,14 @@
 #left-tool,
 .panel-list_8jHmm,
 .cu-font-base,
-._paragraph_10ku5_2,
+._paragraph_10ku5_2.md,
 .pc-rg-upgrade_2X3zi .item_3WKCf,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q {
+.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
+.rs-text_3K5mR,
+.cosd-markdown .marklang .marklang-paragraph,
+.markdown-box_4cZKp .cosd-markdown .marklang :not(h2) mark,
+.title_3Gb8U,
+.pc-fresh-wrapper .page_2muyV.page-sample .page-item_M4MDr {
   font-family: var(--font-sans);
 }
 
