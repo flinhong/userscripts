@@ -5,10 +5,6 @@
       "match": ["*://baidu.com/*", "*://www.baidu.com/*"]
     },
     {
-      "file": "github.css",
-      "match": ["*://github.com/*"]
-    },
-    {
       "file": "zhihu.css",
       "match": ["*://www.zhihu.com/*"]
     },
@@ -24,14 +20,6 @@
         "*://www.google.co.uk/*",
         "*://www.google.com.hk/*"
       ]
-    },
-    {
-      "file": "chatgpt.css",
-      "match": ["*://chatgpt.com/*"]
-    },
-    {
-      "file": "reddit.css",
-      "match": ["*://www.reddit.com/*"]
     },
     {
       "file": "deepseek.css",

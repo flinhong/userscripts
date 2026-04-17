@@ -7,7 +7,6 @@
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
-// @match        *://github.com/*
 // @match        *://www.zhihu.com/*
 // @match        *://bing.com/*
 // @match        *://*.bing.com/*
@@ -15,8 +14,6 @@
 // @match        *://www.google.com/*
 // @match        *://www.google.co.uk/*
 // @match        *://www.google.com.hk/*
-// @match        *://chatgpt.com/*
-// @match        *://www.reddit.com/*
 // @match        *://chat.deepseek.com/*
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
@@ -45,7 +42,7 @@
     } catch (e) {
         console.error('[Custom Styles] Failed to get version:', e.message);
     }
-    const BASE_URL = 'https://cdn.frankindev.com/statically/gh/flinhong/userscripts@v' + version + '/public';
+    const BASE_URL = 'https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@v' + version + '/public';
 
     const hostname = window.location.hostname;
     console.log('[Custom Styles] v' + version + ' | ' + hostname);
