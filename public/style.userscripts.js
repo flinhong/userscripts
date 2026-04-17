@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      0.0.21
-// @description  Apply custom fonts and styles to supported websites
+// @version      0.0.22
+// @description  Apply custom fonts and styles to configed websites
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://baidu.com/*
@@ -19,7 +19,7 @@
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
 // @grant        GM.addStyle
-// @run-at       document-end
+// @run-at       document-start
 // @inject-into  auto
 // ==/UserScript==
 
