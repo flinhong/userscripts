@@ -25,6 +25,7 @@
    ============================================ */
 #s-top-left .c-font-normal,
 .wrapper_new,
+.c-wrapper,
 #container,
 #container.sam_newgrid,
 .new-pmd.c-container,
@@ -47,7 +48,14 @@
 .cosd-markdown .marklang .marklang-paragraph,
 .markdown-box_4cZKp .cosd-markdown .marklang :not(h2) mark,
 .title_3Gb8U,
-.pc-fresh-wrapper .page_2muyV.page-sample .page-item_M4MDr {
+.pc-fresh-wrapper .page_2muyV.page-sample .page-item_M4MDr,
+.s-feed-list.s-feed-list-wrapper,
+#ci-main .ci-textarea,
+.pc-rg-upgrade_2X3zi .item_3WKCf,
+.cosd-markdown .marklang h1,
+.cosd-markdown .marklang h2,
+.cosd-markdown .marklang h3,
+.cosd-markdown .marklang strong {
   font-family: var(--font-sans);
 }
 
@@ -80,7 +88,8 @@ em,
 .cosc-title,
 .cosc-title-a,
 .cos-more-link-text,
-.c-color-link.cos-font-medium {
+.c-color-link.cos-font-medium,
+.new-pmd .c-font-medium {
   font-family: var(--font-serif);
 }
 

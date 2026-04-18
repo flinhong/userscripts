@@ -9,6 +9,10 @@
       "match": ["*://www.zhihu.com/*"]
     },
     {
+      "file": "bilibili.css",
+      "match": ["*://www.bilibili.com/*"]
+    },
+    {
       "file": "bing.css",
       "match": ["*://bing.com/*", "*://*.bing.com/*"]
     },
