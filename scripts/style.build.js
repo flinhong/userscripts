@@ -35,8 +35,8 @@ ${matchLines}
 // @downloadURL  ${CDN_BASE}/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
 // @grant        GM.addStyle
-// @run-at       document-start
-// @inject-into  auto
+// @run-at       document-end
+// @inject-into  content
 // ==/UserScript==
 
 (function() {
