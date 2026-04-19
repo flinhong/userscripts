@@ -9,10 +9,6 @@
       "match": ["*://www.zhihu.com/*"]
     },
     {
-      "file": "zhida.zhihu.css",
-      "match": ["*://zhida.zhihu.com/*"]
-    },
-    {
       "file": "bing.css",
       "match": ["*://bing.com/*", "*://*.bing.com/*"]
     },
