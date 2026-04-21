@@ -1,94 +1,23 @@
 @import url("https://fonts.googleapis.cn/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
 
-:root,
-html {
+:root {
   --font-sans:
-    "Outfit", "Noto Serif SC", -apple-system, "BlinkMacSystemFont", "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif !important;
+    Outfit, "Noto Serif SC", -apple-system, BlinkMacSystemFont,
+    "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
   --font-serif:
-    "Crimson Text", "Noto Serif SC", "Georgia", "Cambria", "Times New Roman",
-    "Times", serif !important;
+    "Crimson Text", "Noto Serif SC", "Iowan Old Style", "Palatino",
+    "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", Times,
+    serif;
   --font-mono:
-    "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SFMono-Regular", "Menlo",
-    "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace !important;
+    "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SF Mono", "Menlo",
+    "Monaco", "Cascadia Code", "Consolas", "Courier New", monospace;
 }
 
 * {
   transition: font-family 0.2s ease-in-out;
 }
 
-#s-top-left .c-font-normal,
-.wrapper_new,
-#container,
-#container.sam_newgrid,
-.new-pmd.c-container,
-.cosc-title-slot,
-.cos-button,
-#container.sam_newgrid td,
-#container.sam_newgrid th,
-.cos-font-medium,
-.cosd-question-guide-title,
-.cosd-question-guide-title-icon,
-.wrapper_new #u .s-top-username,
-#right-tool,
-#left-tool,
-.panel-list_8jHmm,
-.cu-font-base,
-._paragraph_10ku5_2.md,
-.pc-rg-upgrade_2X3zi .item_3WKCf,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
-.rs-text_3K5mR,
-.cosd-markdown .marklang .marklang-paragraph,
-.markdown-box_4cZKp .cosd-markdown .marklang :not(h2) mark,
-.title_3Gb8U,
-.pc-fresh-wrapper .page_2muyV.page-sample .page-item_M4MDr {
-  font-family:
-    "Outfit",
-    "Noto Serif SC",
-    -apple-system,
-    "BlinkMacSystemFont",
-    "Segoe UI",
-    "Roboto",
-    "Oxygen",
-    "Ubuntu",
-    "Cantarell",
-    sans-serif !important;
-}
-
-body,
-button,
-input,
-select,
-textarea,
-em,
-.c-font-normal,
-.c-font-medium,
-.new-pmd .c-font-special,
-#chat-input-main textarea,
-#chat-input-footer button,
-#container .c-title,
-.cos-text-body,
-.cos-text-body-lg,
-.cosd-markdown .marklang .marklang-paragraph,
-.jump-btn_4WUGP,
-.cosc-title,
-.cosc-title-a,
-.cos-more-link-text,
-.c-color-link.cos-font-medium,
-.cos-text-body a,
-.cos-text-body-lg a,
-.c-title a {
-  font-family:
-    "Crimson Text", "Noto Serif SC", "Georgia", "Cambria", "Times New Roman",
-    "Times", serif !important;
-}
-
-.s-bottom-layer-content,
-#page.page-sample,
-.cosc-source-caption,
-.cosc-source-text,
-.cosc-source-a.cos-source-link {
-  font-family:
-    "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SFMono-Regular", "Menlo",
-    "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace !important;
+.c-font-normal {
+  font-family: var(--font-sans) !important;
 }
