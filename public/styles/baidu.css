@@ -5,6 +5,10 @@
     Outfit, "Noto Serif SC", -apple-system, BlinkMacSystemFont,
     "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
+  --font-sans-sc:
+    Outfit, "Noto Sans", -apple-system, BlinkMacSystemFont,
+    "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
   --font-serif:
     "Crimson Text", "Noto Serif SC", "Iowan Old Style", "Palatino",
     "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", Times,
@@ -18,6 +22,60 @@
   transition: font-family 0.2s ease-in-out;
 }
 
-.c-font-normal {
+body,
+.c-font-normal,
+.c-font-medium,
+.message-center-icon,
+#chat-input-main *,
+.wrapper_new,
+#container.sam_newgrid {
   font-family: var(--font-sans) !important;
+}
+
+#right-tool *:not(.cos-icon),
+#left-tool *:not(.cos-icon),
+.panel-list_8jHmm *:not(.cos-icon),
+.cos-link,
+.cos-link-button,
+#container.sam_newgrid td,
+#container.sam_newgrid th,
+.cos-text-body,
+.cos-text-body-lg,
+.line_jFrxr,
+.pc-rg-upgrade_2X3zi .item_3WKCf,
+.pc-rs-upgrade_3SRoo .rs-link_2DE3Q {
+  font-family: var(--font-sans) !important;
+}
+
+.cos-tag,
+.cosc-title,
+.cosc-title-a,
+a.cosc-title-a .cosc-title-slot,
+.cos-text-body-lg-higher,
+.cos-text-subtitle-sm,
+._paragraph_10ku5_2,
+.pc-fresh-title-con #container.sam_newgrid .c-container .t,
+.pc-fresh-title-con #container.sam_newgrid .c-container .c-title {
+  font-family: var(--font-sans-sc) !important;
+}
+
+.cosd-markdown .marklang .marklang-paragraph,
+.cosd-markdown .marklang {
+  font-family: var(--font-sans) !important;
+}
+
+.wrapper_new #u .s-top-username,
+.cosd-markdown .marklang h1,
+.cosd-markdown .marklang h2,
+.cosd-markdown .marklang h3,
+.cosd-markdown .marklang strong,
+.cos-tabs .cos-tab {
+  font-family: var(--font-sans-sc) !important;
+}
+
+#bottom_layer .s-bottom-layer-content,
+.cosc-source-caption,
+.cosc-source-text,
+#page.page-sample {
+  font-family: var(--font-mono) !important;
 }
