@@ -42,7 +42,17 @@ html {
 .markdown-box_4cZKp .cosd-markdown .marklang :not(h2) mark,
 .title_3Gb8U,
 .pc-fresh-wrapper .page_2muyV.page-sample .page-item_M4MDr {
-  font-family: var(--font-sans);
+  font-family:
+    "Outfit",
+    "Noto Serif SC",
+    -apple-system,
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    sans-serif !important;
 }
 
 body,
@@ -64,14 +74,13 @@ em,
 .cosc-title,
 .cosc-title-a,
 .cos-more-link-text,
-.c-color-link.cos-font-medium {
-  font-family: var(--font-serif);
-}
-
+.c-color-link.cos-font-medium,
 .cos-text-body a,
 .cos-text-body-lg a,
 .c-title a {
-  font-family: var(--font-serif);
+  font-family:
+    "Crimson Text", "Noto Serif SC", "Georgia", "Cambria", "Times New Roman",
+    "Times", serif !important;
 }
 
 .s-bottom-layer-content,
@@ -79,5 +88,7 @@ em,
 .cosc-source-caption,
 .cosc-source-text,
 .cosc-source-a.cos-source-link {
-  font-family: var(--font-mono);
+  font-family:
+    "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SFMono-Regular", "Menlo",
+    "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace !important;
 }
