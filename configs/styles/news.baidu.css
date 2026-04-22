@@ -1,81 +1,81 @@
+@import url("https://fonts.googleapis.cn/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
+
 :root {
   --font-sans:
-    'Outfit', 'Noto Serif SC', -apple-system, 'BlinkMacSystemFont', 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    Outfit, "Noto Serif SC", -apple-system, BlinkMacSystemFont,
+    "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+  --font-sans-sc:
+    Outfit, "Noto Sans", -apple-system, BlinkMacSystemFont,
+    "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
   --font-serif:
-    'Crimson Text', 'Noto Serif SC', 'Georgia', 'Cambria', 'Times New Roman',
-    'Times', serif;
+    "Crimson Text", "Noto Serif SC", "Iowan Old Style", "Palatino",
+    "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", Times,
+    serif;
   --font-mono:
-    'IBM Plex Mono', 'Noto Serif SC', ui-monospace, 'SFMono-Regular', 'Menlo',
-    'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SF Mono", "Menlo",
+    "Monaco", "Cascadia Code", "Consolas", "Courier New", monospace;
 }
 
-/* Smooth font transition */
 * {
   transition: font-family 0.2s ease-in-out;
 }
 
-/* Sans Serif Fonts */
-#s-top-left .c-font-normal,
-.wrapper_new,
-#container,
-#container.sam_newgrid,
-.new-pmd.c-container,
-.cosc-title-slot,
-.cos-button,
-#container.sam_newgrid td,
-#container.sam_newgrid th,
-.cos-font-medium,
-.cosd-question-guide-title,
-.cosd-question-guide-title-icon,
-.wrapper_new #u .s-top-username,
-#right-tool *,
-#left-tool *,
-.panel-list_8jHmm *,
-.cu-font-base,
-._paragraph_10ku5_2,
-.pc-rg-upgrade_2X3zi .item_3WKCf,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
-#right-tool :not(.cos-icon),
-#left-tool :not(.cos-icon),
-.panel-list_8jHmm :not(.cos-icon) {
-  font-family: var(--font-sans);
-}
-
-/* Serif Fonts */
 body,
-button,
-input,
-select,
-textarea,
-em,
 .c-font-normal,
 .c-font-medium,
-.new-pmd .c-font-special,
-#chat-input-main textarea,
-#chat-input-footer button,
-#container .c-title,
+.message-center-icon,
+#chat-input-main *,
+.wrapper_new,
+#container.sam_newgrid {
+  font-family: var(--font-sans) !important;
+}
+
+#right-tool *:not(.cos-icon),
+#left-tool *:not(.cos-icon),
+.panel-list_8jHmm *:not(.cos-icon),
+.cos-link,
+.cos-link-button,
+#container.sam_newgrid td,
+#container.sam_newgrid th,
 .cos-text-body,
 .cos-text-body-lg,
-.new-pmd .c-font-medium,
-.pc-rs-upgrade_3SRoo .rs-link_2DE3Q,
-.cosd-markdown .marklang .marklang-paragraph,
-.jump-btn_4WUGP,
-.pc-fresh-title-con #container.sam_newgrid .c-container .c-group-title,
+.line_jFrxr,
+.pc-rg-upgrade_2X3zi .item_3WKCf,
+.pc-rs-upgrade_3SRoo .rs-link_2DE3Q {
+  font-family: var(--font-sans) !important;
+}
+
+.cos-tag,
 .cosc-title,
 .cosc-title-a,
 a.cosc-title-a .cosc-title-slot,
-.cos-more-link-text,
-.pc-rg-upgrade_2X3zi .item_3WKCf,
-.c-color-link.cos-font-medium {
-  font-family: var(--font-serif);
+.cos-text-body-lg-higher,
+.cos-text-subtitle-sm,
+._paragraph_10ku5_2,
+.pc-fresh-title-con #container.sam_newgrid .c-container .t,
+.pc-fresh-title-con #container.sam_newgrid .c-container .c-title {
+  font-family: var(--font-sans-sc) !important;
 }
 
-/* Mono Fonts */
-.s-bottom-layer-content,
-#page.page-sample,
+.cosd-markdown .marklang .marklang-paragraph,
+.cosd-markdown .marklang {
+  font-family: var(--font-sans) !important;
+}
+
+.wrapper_new #u .s-top-username,
+.cosd-markdown .marklang h1,
+.cosd-markdown .marklang h2,
+.cosd-markdown .marklang h3,
+.cosd-markdown .marklang strong,
+.cos-tabs .cos-tab {
+  font-family: var(--font-sans-sc) !important;
+}
+
+#bottom_layer .s-bottom-layer-content,
 .cosc-source-caption,
 .cosc-source-text,
-.cosc-source-a.cosc-source-link {
-  font-family: var(--font-mono);
+#page.page-sample {
+  font-family: var(--font-mono) !important;
 }

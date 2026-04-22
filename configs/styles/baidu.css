@@ -1,13 +1,13 @@
-@import url("https://fonts.googleapis.cn/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.cn/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
 
 :root {
   --font-sans:
-    Outfit, "Noto Serif SC", -apple-system, BlinkMacSystemFont,
-    "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Outfit", "Noto Serif SC", -apple-system, "BlinkMacSystemFont",
+    "Microsoft Yahei UI", "Segoe UI", "Roboto", "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
-  --font-sans-sc:
-    Outfit, "Noto Sans", -apple-system, BlinkMacSystemFont,
-    "Microsoft Yahei UI", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+  --font-sans-title:
+    "Outfit", "Noto Sans SC", -apple-system, "BlinkMacSystemFont",
+    "Microsoft Yahei UI", "Segoe UI", "Roboto", "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
   --font-serif:
     "Crimson Text", "Noto Serif SC", "Iowan Old Style", "Palatino",
@@ -55,13 +55,17 @@ a.cosc-title-a .cosc-title-slot,
 .cos-text-subtitle-sm,
 ._paragraph_10ku5_2,
 .pc-fresh-title-con #container.sam_newgrid .c-container .t,
-.pc-fresh-title-con #container.sam_newgrid .c-container .c-title {
-  font-family: var(--font-sans-sc) !important;
+.pc-fresh-title-con #container.sam_newgrid .c-container .c-title,
+#chat-input-main .chat-input-tool .right-tools-wrapper #chat-submit-button,
+#container.sam_newgrid .c-showurl,
+.nbk-index_lwSre .cosd-markdown .marklang :not(h2) mark strong,
+.wrapper_new #u .s-top-username {
+  font-family: var(--font-sans-title) !important;
 }
 
 .cosd-markdown .marklang .marklang-paragraph,
 .cosd-markdown .marklang {
-  font-family: var(--font-sans) !important;
+  font-family: var(--font-serif) !important;
 }
 
 .wrapper_new #u .s-top-username,
@@ -70,12 +74,15 @@ a.cosc-title-a .cosc-title-slot,
 .cosd-markdown .marklang h3,
 .cosd-markdown .marklang strong,
 .cos-tabs .cos-tab {
-  font-family: var(--font-sans-sc) !important;
+  font-family: var(--font-sans-title) !important;
 }
 
 #bottom_layer .s-bottom-layer-content,
 .cosc-source-caption,
 .cosc-source-text,
+.cos-more-link-text,
+.cos-pc .nbk-index_lwSre .cosd-citation-citationId,
+.cos-pc .nbk-index_lwSre .cosd-citation-tag-citationId,
 #page.page-sample {
   font-family: var(--font-mono) !important;
 }
