@@ -6,7 +6,7 @@
     },
     {
       "file": "news.baidu.css",
-      "match": ["*://news.baidu.com/*"]
+      "match": ["*://news.baidu.com/*", "*://baijiahao.baidu.com/*"]
     },
     {
       "file": "zhihu.css",

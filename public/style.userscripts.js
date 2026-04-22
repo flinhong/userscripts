@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      0.0.32
+// @version      0.0.33
 // @description  Apply custom fonts and styles to configed websites
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://baidu.com/*
 // @match        *://www.baidu.com/*
 // @match        *://news.baidu.com/*
+// @match        *://baijiahao.baidu.com/*
 // @match        *://www.zhihu.com/*
 // @match        *://bing.com/*
 // @match        *://*.bing.com/*
