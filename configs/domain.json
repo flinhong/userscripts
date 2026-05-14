@@ -10,7 +10,7 @@
     },
     {
       "file": "zhihu.css",
-      "match": ["*://www.zhihu.com/*"]
+      "match": ["*://www.zhihu.com/*", "*://zhida.zhihu.com/*"]
     },
     {
       "file": "bing.css",
