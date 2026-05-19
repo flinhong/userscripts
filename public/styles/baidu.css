@@ -1,4 +1,79 @@
-@import url("https://cdn.honglin.ac.cn/fonts/g/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
+@font-face {
+  font-family: "Crimson Text";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Crimson Text Regular"),
+    local("CrimsonText-Regular"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/CrimsonText-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "Crimson Text";
+  font-style: italic;
+  font-weight: 400;
+  src:
+    local("Crimson Text Italic"),
+    local("CrimsonText-Italic"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/CrimsonText-Italic.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("IBM Plex Mono Regular"),
+    local("IBMPlexMono-Regular"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/IBMPlexMono-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: italic;
+  font-weight: 400;
+  src:
+    local("IBM Plex Mono Italic"),
+    local("IBMPlexMono-Italic"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/IBMPlexMono-Italic.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Sans SC";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Noto Sans SC Regular"),
+    local("NotoSansSC-Regular"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/NotoSansSC-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "Noto Serif SC";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Noto Serif SC Regular"),
+    local("NotoSerifSC-Regular"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/NotoSerifSC-Regular.ttf")
+      format("truetype");
+}
+
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local("Outfit Regular"),
+    local("Outfit-Regular"),
+    url("https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/fonts/Outfit-Regular.ttf")
+      format("truetype");
+}
 
 :root {
   --font-sans:
