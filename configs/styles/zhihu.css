@@ -3,20 +3,21 @@
 :root,
 html {
   --font-sans:
-    "Outfit", "Gill Sans, "Noto Serif SC", "Songti SC", -apple-system,
-    "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    sans-serif;
+    "Outfit", "Futura", "Optima", "Noto Serif SC", "STSong", "Songti SC",
+    -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", sans-serif;
   --font-serif:
-    "Crimson Text", "Charter", "Noto Serif SC", "Songti SC", "Georgia",
-    "Cambria", "Times New Roman", "Times", serif;
+    "Crimson Text", "Charter", "Baskerville", "Noto Serif SC", "STSong",
+    "Songti SC", "Georgia", "Cambria", "Times New Roman", "Times", serif;
   --font-mono:
-    "IBM Plex Mono", "Andale Mono", "Noto Serif SC", "Songti SC", ui-monospace,
-    "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono",
-    "Courier New", monospace;
+    "IBM Plex Mono", "Monaco", "BIZ UDMincho", "Noto Serif SC", "STSong",
+    "Songti SC", ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
+    "Liberation Mono", "Courier New", monospace;
   --rv-base-font-family:
-    "Outfit", "Noto Serif SC", "Songti SC", -apple-system, "BlinkMacSystemFont",
-    "Helvetica Neue", Helvetica, "Segoe UI", "Arial", "Roboto", "PingFang SC",
-    "Hiragino Sans GB", "Microsoft Yahei UI", sans-serif;
+    "Outfit", "Noto Serif SC", "STSong", "Songti SC", -apple-system,
+    "BlinkMacSystemFont", "Helvetica Neue", Helvetica, "Segoe UI", "Arial",
+    "Roboto", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei UI",
+    sans-serif;
 }
 
 * {
@@ -25,7 +26,7 @@ html {
 
 html {
   --zFontSansSerif: var(--font-sans) !important;
-  --zFontMonospace: var(--font-mono);
+  --zFontMonospace: var(--font-mono) !important;
 }
 
 body {
@@ -44,4 +45,10 @@ pre,
 code,
 .highlight pre code {
   font-family: var(--zFontMonospace) !important;
+}
+
+/* zhida */
+.Render-markdown,
+div[dir="auto"] {
+  font-family: var(--font-sans) !important;
 }
