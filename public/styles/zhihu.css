@@ -29,16 +29,10 @@ html {
   --zFontMonospace: var(--font-mono) !important;
 }
 
-body {
-  font-family: var(--font-sans) !important;
-}
-
-.HotSearchCard-itemText {
-  font-family: var(--font-sans) !important;
-}
-
+body,
+.HotSearchCard-itemText,
 .HotSearchCard-change {
-  font-family: var(--font-serif) !important;
+  font-family: var(--zFontSansSerif) !important;
 }
 
 pre,
@@ -50,5 +44,5 @@ code,
 /* zhida */
 .Render-markdown,
 div[dir="auto"] {
-  font-family: var(--font-sans) !important;
+  font-family: var(--zFontSansSerif) !important;
 }
