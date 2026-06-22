@@ -5,10 +5,6 @@
     "Outfit", "Noto Serif SC", -apple-system, "BlinkMacSystemFont",
     "Microsoft Yahei UI", "Segoe UI", "Roboto", "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
-  --font-sans-title:
-    "Outfit", "Noto Sans SC", -apple-system, "BlinkMacSystemFont",
-    "Microsoft Yahei UI", "Segoe UI", "Roboto", "Helvetica Neue", Arial,
-    "Noto Sans", sans-serif;
   --font-serif:
     "Crimson Text", "Noto Serif SC", "Iowan Old Style", "Palatino",
     "Palatino Linotype", "Book Antiqua", Georgia, "Times New Roman", Times,
@@ -60,7 +56,7 @@ a.cosc-title-a .cosc-title-slot,
 #container.sam_newgrid .c-showurl,
 .nbk-index_lwSre .cosd-markdown .marklang :not(h2) mark strong,
 .wrapper_new #u .s-top-username {
-  font-family: var(--font-sans-title) !important;
+  font-family: var(--font-sans) !important;
 }
 
 .cosd-markdown .marklang .marklang-paragraph,
@@ -74,7 +70,7 @@ a.cosc-title-a .cosc-title-slot,
 .cosd-markdown .marklang h3,
 .cosd-markdown .marklang strong,
 .cos-tabs .cos-tab {
-  font-family: var(--font-sans-title) !important;
+  font-family: var(--font-sans) !important;
 }
 
 #bottom_layer .s-bottom-layer-content,
