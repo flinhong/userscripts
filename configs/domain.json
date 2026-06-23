@@ -36,6 +36,10 @@
     {
       "file": "chatgpt.css",
       "match": ["*://chatgpt.com/*"]
+    },
+    {
+      "file": "x.css",
+      "match": ["*://x.com/*"]
     }
   ]
 }
