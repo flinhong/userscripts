@@ -1,0 +1,20 @@
+@import url("https://cdn.honglin.ac.cn/fonts/g/css?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
+
+body,
+#main #cnt,
+input,
+button,
+[data-snc] .notranslate span,
+[data-snc] h3 {
+  font-family: var(--font-sans);
+}
+
+.gb_H .gb_Z,
+[data-snc] [data-snf] span,
+[data-snc] [data-sncf="1"] {
+  font-family: var(--font-serif);
+}
+
+#gws-output-pages-elements-homepage_additional_languages__als {
+  font-family: var(--font-mono);
+}

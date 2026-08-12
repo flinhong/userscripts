@@ -1,0 +1,12 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+
+# macOS
+.DS_Store
+
+# Gemini temporary files
+.geminiignore
+.gemini/

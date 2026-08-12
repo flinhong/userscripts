@@ -1,0 +1,37 @@
+{
+  "rules": [
+    {
+      "file": "baidu.css",
+      "match": ["*://baidu.com/*", "*://www.baidu.com/*"]
+    },
+    {
+      "file": "news.baidu.css",
+      "match": ["*://news.baidu.com/*", "*://baijiahao.baidu.com/*"]
+    },
+    {
+      "file": "chat.baidu.css",
+      "match": ["*://chat.baidu.com/*"]
+    },
+    {
+      "file": "zhihu.css",
+      "match": ["*://www.zhihu.com/*", "*://zhida.zhihu.com/*"]
+    },
+    {
+      "file": "bing.css",
+      "match": ["*://bing.com/*", "*://*.bing.com/*"]
+    },
+    {
+      "file": "google.css",
+      "match": [
+        "*://google.com/*",
+        "*://www.google.com/*",
+        "*://www.google.co.uk/*",
+        "*://www.google.com.hk/*"
+      ]
+    },
+    {
+      "file": "deepseek.css",
+      "match": ["*://chat.deepseek.com/*"]
+    }
+  ]
+}
