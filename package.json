@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rm -rf public",
     "build": "npm run clean && node scripts/style.build.js && node scripts/imgur.build.js",
-    "release:ci": "standard-version && npm run build && git add -A && git commit -m \"chore: build files [skip ci]\" && git push origin --follow-tags"
+    "release:ci": "commit-and-tag-version && npm run build && git add -A && git commit -m \"chore: build files [skip ci]\" && git push origin --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/flinhong/userscripts#readme",
   "devDependencies": {
-    "prettier": "^3.8.1",
-    "standard-version": "^9.5.0"
+    "commit-and-tag-version": "^13.1.2",
+    "prettier": "^3.8.1"
   }
 }

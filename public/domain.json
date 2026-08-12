@@ -9,8 +9,8 @@
       "match": ["*://news.baidu.com/*", "*://baijiahao.baidu.com/*"]
     },
     {
-      "file": "chat.baidu.css",
-      "match": ["*://chat.baidu.com/*"]
+      "file": "wenxin.baidu.css",
+      "match": ["*://wenxin.baidu.com/*"]
     },
     {
       "file": "zhihu.css",
