@@ -118,7 +118,8 @@ CI runs `npm run release:ci` which will:
 2. Build all scripts with the new version
 3. Commit build files
 4. Create git tag and push to remote
-5. Prune tags older than the last 10
+
+**Tag pruning** — only the last 11 tags are kept. Older tags are deleted from both remote and local after each release. This prevents tag sprawl while retaining recent history for rollback.
 
 ## License
 
