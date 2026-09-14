@@ -6,6 +6,8 @@
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://*/*
+// @exclude      *://imgur.com/*
+// @exclude      *://*.imgur.com/*
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
 // @grant        none

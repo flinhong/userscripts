@@ -66,6 +66,8 @@ const imgurUserscriptHeader = `// ==UserScript==
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://*/*
+// @exclude      *://imgur.com/*
+// @exclude      *://*.imgur.com/*
 // @updateURL    ${CDN_BASE}/public/imgur.userscripts.js
 // @downloadURL  ${CDN_BASE}/public/imgur.userscripts.js
 // @grant        none
