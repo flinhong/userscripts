@@ -10,6 +10,9 @@
   --font-mono:
     "IBM Plex Mono", "Noto Serif SC", ui-monospace, "SFMono-Regular", "Menlo",
     "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
+  --font-family-sans-serif:
+    "Outfit", "Noto Serif SC", -apple-system, "BlinkMacSystemFont", "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif;
 }
 
 body {
@@ -18,6 +21,7 @@ body {
 
 .stats-card__value,
 .counters__column--value,
-.stats__row-value {
+.stats__row-value,
+.logs__text small {
   font-family: var(--font-mono) !important;
 }
