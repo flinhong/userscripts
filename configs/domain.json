@@ -36,6 +36,10 @@
     {
       "file": "adguardhome.css",
       "match": ["*://dns.frankindev.com/*", "*://doh.frankindev.com/*"]
+    },
+    {
+      "file": "ebooks-calibre.css",
+      "match": ["*://ebooks.frankindev.com/*"]
     }
   ]
 }
