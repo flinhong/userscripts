@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      0.0.60
+// @version      0.0.61
 // @description  Apply custom fonts and styles to configed websites
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
@@ -21,6 +21,7 @@
 // @match        *://chat.deepseek.com/*
 // @match        *://dns.frankindev.com/*
 // @match        *://doh.frankindev.com/*
+// @match        *://ebooks.frankindev.com/*
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
