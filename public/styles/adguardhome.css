@@ -22,6 +22,7 @@ body {
 .stats-card__value,
 .counters__column--value,
 .stats__row-value,
-.logs__text small {
+.logs__text small,
+.logs__text.logs__text--full {
   font-family: var(--font-mono) !important;
 }
