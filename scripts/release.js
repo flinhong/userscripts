@@ -42,5 +42,8 @@ run("bun run build");
 
 run("git add -A");
 run('git commit -m "chore: build files [skip ci]"');
-run(`git tag v${version}`);
-run("git push origin HEAD --follow-tags");
+// Annotated tag + explicit push: `--follow-tags` only pushes annotated tags,
+// and a lightweight tag would silently fail to reach the remote.
+run(`git tag -a v${version} -m "release v${version}"`);
+run("git push origin HEAD");
+run(`git push origin v${version}`);
