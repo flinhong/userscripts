@@ -51,16 +51,18 @@ userscripts/
 
 ## Development
 
+Requires [Bun](https://bun.sh) >= 1.1.
+
 ```bash
-npm install
-npm run build
+bun install
+bun run build
 ```
 
 Build outputs to `public/`. Run individually:
 
 ```bash
-node scripts/style.build.js   # Build custom styles script
-node scripts/imgur.build.js   # Build imgur proxy script
+bun scripts/style.build.js   # Build custom styles script
+bun scripts/imgur.build.js   # Build imgur proxy script
 ```
 
 ## Configuration
@@ -112,7 +114,7 @@ Push to `main` to trigger GitHub Actions:
 git push origin main
 ```
 
-CI runs `npm run release:ci` which will:
+CI installs Bun via `oven-sh/setup-bun` (version read from `package.json`'s `packageManager`), then runs `bun install --frozen-lockfile` and `bun run release:ci`, which will:
 
 1. Update `package.json` version via `commit-and-tag-version`
 2. Build all scripts with the new version
