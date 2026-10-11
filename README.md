@@ -95,6 +95,7 @@ Current rules in `configs/domain.json`:
 | `bing.css` | `bing.com`, `*.bing.com` |
 | `google.css` | `google.com`, `www.google.com`, `www.google.co.uk`, `www.google.com.hk` |
 | `deepseek.css` | `chat.deepseek.com` |
+| `bilibili.css` | `www.bilibili.com` |
 | `adguardhome.css` | `dns.frankindev.com`, `doh.frankindev.com` |
 
 ## CDN Versioning
