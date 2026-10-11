@@ -22,6 +22,7 @@
 // @match        *://dns.frankindev.com/*
 // @match        *://doh.frankindev.com/*
 // @match        *://ebooks.frankindev.com/*
+// @match        *://www.bilibili.com/*
 // @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
