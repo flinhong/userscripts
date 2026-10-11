@@ -108,20 +108,24 @@ https://cdn.frankindev.com/statically/gh/flinhong/userscripts@{version}/public/s
 
 ## Release (CI)
 
-Push to `main` to trigger GitHub Actions:
+Releases are triggered by a push to `main`, or daily at 00:00 UTC via `schedule`. You can also trigger one manually with `workflow_dispatch`.
 
-```bash
-git push origin main
-```
+CI installs Bun via `oven-sh/setup-bun` (version read from `package.json`'s `packageManager`), then runs `bun install --frozen-lockfile` and `bun run release:ci` (`scripts/release.js`), which will:
 
-CI installs Bun via `oven-sh/setup-bun` (version read from `package.json`'s `packageManager`), then runs `bun install --frozen-lockfile` and `bun run release:ci`, which will:
-
-1. Update `package.json` version via `commit-and-tag-version`
-2. Build all scripts with the new version
+1. Compute the version as `YYYY.MM.DD.N` in UTC, where `N` is the highest existing tag for today plus 1 (so `v2026.10.12.0`, then `v2026.10.12.1`, ...)
+2. Update `package.json` version and build all scripts with it
 3. Commit build files
 4. Create git tag and push to remote
 
-**Tag pruning** — only the last 11 tags are kept. Older tags are deleted from both remote and local after each release. This prevents tag sprawl while retaining recent history for rollback.
+A push and a scheduled run are serialized via a `concurrency` group, so they can't race. Build commits are tagged `[skip ci]` to avoid re-triggering.
+
+**Tag pruning** — only the last 21 tags are kept. Older tags are deleted from both remote and local after each release. This prevents tag sprawl while retaining recent history for rollback.
+
+To dry-run the version calculation locally (no commit/tag/push):
+
+```bash
+bun scripts/release.js --dry-run
+```
 
 ## License
 
