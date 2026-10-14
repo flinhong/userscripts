@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      2026.10.13.0
+// @version      2026.10.14.0
 // @description  Apply custom fonts and styles to configed websites
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
