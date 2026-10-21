@@ -50,7 +50,7 @@ ${matchLines}
       version = GM.info.script.version;
     } else if (GM.info?.scriptMetaStr) {
       // Fallback: 从 scriptMetaStr 解析
-      const versionMatch = GM.info.scriptMetaStr.match(/@version\s+(.+)/);
+      const versionMatch = GM.info.scriptMetaStr.match(/@version\\s+(.+)/);
       if (versionMatch) {
         version = versionMatch[1].trim();
       }

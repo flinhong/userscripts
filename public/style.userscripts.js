@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Custom Styles
 // @namespace    https://github.com/flinhong/userscripts
-// @version      2026.10.21.0
+// @version      1.0.0
 // @description  Apply custom fonts and styles to configed websites
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
@@ -42,7 +42,7 @@
       version = GM.info.script.version;
     } else if (GM.info?.scriptMetaStr) {
       // Fallback: 从 scriptMetaStr 解析
-      const versionMatch = GM.info.scriptMetaStr.match(/@versions+(.+)/);
+      const versionMatch = GM.info.scriptMetaStr.match(/@version\s+(.+)/);
       if (versionMatch) {
         version = versionMatch[1].trim();
       }
