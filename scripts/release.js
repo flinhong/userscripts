@@ -5,6 +5,8 @@ const { execSync } = require("child_process");
 const ROOT_DIR = path.join(__dirname, "..");
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes("--dry-run");
+const SCHEDULED =
+  args.includes("--scheduled") || process.env.SCHEDULED === "true";
 
 const SEMVER_RE =
   /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?$/;
@@ -90,24 +92,6 @@ function compareVersions(a, b) {
   return comparePrerelease(a.prerelease, b.prerelease);
 }
 
-function bumpVersion(base, bump) {
-  switch (bump) {
-    case "major":
-      return { major: base.major + 1, minor: 0, patch: 0, prerelease: null };
-    case "minor":
-      return {
-        major: base.major,
-        minor: base.minor + 1,
-        patch: 0,
-        prerelease: null,
-      };
-    case "patch":
-      return { ...base, patch: base.patch + 1, prerelease: null };
-    default:
-      fail(`unknown bump type: ${bump}`);
-  }
-}
-
 function getCommitsSince(tag) {
   const range = tag ? `${tag}..HEAD` : "HEAD";
   const output = run(`git log ${range} --format=%B%x00`);
@@ -120,91 +104,103 @@ function getCommitsSince(tag) {
     .filter(message => !BUILD_COMMIT_RE.test(message.split("\n")[0]));
 }
 
-function determineBump(commits) {
-  let bump = null;
-
-  for (const message of commits) {
+function hasReleaseWorthyCommits(commits) {
+  return commits.some(message => {
     const subject = message.split("\n")[0];
 
-    if (BREAKING_RE.test(message) || BREAKING_SUBJECT_RE.test(subject)) {
-      return "major";
-    }
-
-    if (FEAT_RE.test(subject)) {
-      bump = "minor";
-    } else if (PATCH_RE.test(subject) && !bump) {
-      bump = "patch";
-    }
-  }
-
-  return bump;
+    return (
+      BREAKING_RE.test(message) ||
+      BREAKING_SUBJECT_RE.test(subject) ||
+      FEAT_RE.test(subject) ||
+      PATCH_RE.test(subject)
+    );
+  });
 }
 
 const pkgPath = path.join(ROOT_DIR, "package.json");
 const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 const packageVersion = parseVersion(pkg.version);
 
-// Only strict MAJOR.MINOR.PATCH tags are considered; legacy date tags
-// (e.g. v2026.10.21.0) are intentionally ignored.
+// Only strict SemVer tags are considered; legacy date tags such as
+// v2026.10.21.0 are intentionally ignored.
 const tags = run("git tag --list 'v*'")
   .split("\n")
   .filter(Boolean)
-  .map(tag => ({ tag, version: tag.slice(1) }))
-  .filter(({ version }) => parseVersion(version))
-  .sort((a, b) =>
-    compareVersions(parseVersion(a.version), parseVersion(b.version)),
-  );
+  .map(tag => {
+    const version = tag.slice(1);
+    const parsed = parseVersion(version);
+    return parsed ? { tag, version, parsed } : null;
+  })
+  .filter(Boolean)
+  .sort((a, b) => compareVersions(a.parsed, b.parsed));
 
 const latestTag = tags.at(-1) || null;
-let base = latestTag
-  ? parseVersion(latestTag.version)
-  : packageVersion || { major: 0, minor: 0, patch: 0, prerelease: null };
+const latestStableTag =
+  tags.filter(({ parsed }) => !parsed.prerelease).at(-1) || null;
 
-// Prefer package.json if it has been bumped ahead of the latest tag.
-if (packageVersion && compareVersions(packageVersion, base) > 0) {
-  base = packageVersion;
+// Follow the latest stable major. By default this is 1.
+let current = latestStableTag?.parsed ||
+  packageVersion || { major: 1, minor: 0, patch: 0, prerelease: null };
+if (packageVersion && compareVersions(packageVersion, current) > 0) {
+  current = packageVersion;
 }
+const major = current.major;
 
-const releaseAs = getOption("--release-as") || process.env.RELEASE_AS || null;
+// Version format: MAJOR.YYYYMMDD.PATCH, e.g. 1.20261023.0
+const date = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+const dateNumber = Number(date);
+
+const todayTags = tags.filter(
+  ({ parsed }) =>
+    parsed.major === major && parsed.minor === dateNumber && !parsed.prerelease,
+);
+const maxPatch = todayTags.reduce(
+  (max, { parsed }) => Math.max(max, parsed.patch),
+  -1,
+);
+
+const explicit = getOption("--release-as") || process.env.RELEASE_AS || null;
 let version;
+let reason;
 
-if (releaseAs) {
-  if (["major", "minor", "patch"].includes(releaseAs)) {
-    version = formatVersion(bumpVersion(base, releaseAs));
-  } else {
-    const parsed = parseVersion(releaseAs);
-    if (!parsed) {
-      fail(`invalid --release-as value: ${releaseAs}`);
-    }
-    if (compareVersions(parsed, base) <= 0) {
-      fail(
-        `--release-as ${releaseAs} must be greater than current version ${formatVersion(base)}`,
-      );
-    }
-    version = formatVersion(parsed);
+if (explicit) {
+  const parsed = parseVersion(explicit);
+  if (!parsed) {
+    fail(`invalid --release-as value: ${explicit}`);
   }
+  if (compareVersions(parsed, current) <= 0) {
+    fail(
+      `--release-as ${explicit} must be greater than current version ${formatVersion(current)}`,
+    );
+  }
+  version = formatVersion(parsed);
+  reason = "release-as";
+} else if (SCHEDULED) {
+  if (todayTags.length > 0) {
+    console.log(
+      `daily release for ${date} already exists (${todayTags
+        .map(({ tag }) => tag)
+        .join(", ")}); nothing to do`,
+    );
+    process.exit(0);
+  }
+
+  version = `${major}.${date}.0`;
+  reason = `daily release for ${date}`;
 } else {
   const commits = getCommitsSince(latestTag?.tag);
-  const bump = determineBump(commits);
-
-  if (!bump) {
+  if (!hasReleaseWorthyCommits(commits)) {
     console.log(
       `no release-worthy commits since ${latestTag ? latestTag.tag : "the first commit"}; nothing to do`,
     );
     process.exit(0);
   }
 
-  version = formatVersion(bumpVersion(base, bump));
-  console.log(
-    `release version: v${version} (${bump} bump from v${formatVersion(base)})`,
-  );
+  version = `${major}.${date}.${maxPatch + 1}`;
+  reason = `same-day release ${maxPatch + 1} for ${date}`;
 }
 
-if (releaseAs) {
-  console.log(
-    `release version: v${version} (release-as from v${formatVersion(base)})`,
-  );
-}
+console.log(`release version: v${version} (${reason})`);
 
 if (DRY_RUN) {
   console.log("dry run: skipped version bump/build/commit/tag/push");

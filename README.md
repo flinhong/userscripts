@@ -46,7 +46,7 @@ userscripts/
 │   ├── style.userscripts.js
 │   ├── domain.json
 │   └── styles/
-└── package.json             # v1.0.0
+└── package.json             # scripts & version
 ```
 
 ## Development
@@ -109,24 +109,34 @@ https://cdn.frankindev.com/statically/gh/flinhong/userscripts@{version}/public/s
 
 ## Release (CI)
 
-Versions follow [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`), with Git tags such as `v1.0.0`. Versioning restarted at `v1.0.0` when the project returned from date-based versions to SemVer.
+Versions use SemVer syntax in the form `1.YYYYMMDD.N` (UTC), with Git tags such as `v1.20261023.0`:
 
-A push to `main` triggers CI. A release is only created when there are release-worthy commits since the latest `vX.Y.Z` tag; you can also trigger one manually with `workflow_dispatch` (optional `release_as` input: `major`, `minor`, `patch`, or an explicit `X.Y.Z`).
+| Part    | Meaning                                            |
+| ------- | -------------------------------------------------- |
+| `MAJOR` | `1` (follows the latest stable major)              |
+| `MINOR` | UTC date, e.g. `20261023`                          |
+| `PATCH` | Release sequence for that day (`0`, `1`, `2`, ...) |
+
+### Release schedule
+
+- **Daily at 00:00 UTC**, the scheduled workflow publishes the day's `.0` release, even when there are no code changes.
+- **A push to `main`** publishes the next patch for the day (`.1`, `.2`, ...) when it contains release-worthy commits.
+- If the day's `.0` has not been published yet, the first release of the day is `.0`.
+- If the day already has releases, the scheduled run skips it instead of publishing another version.
+- Release-worthy commits are `feat:`, `fix:`, `perf:`, `revert:`, and breaking changes (`BREAKING CHANGE:` or `type!:`). Other types such as `chore:`, `docs:`, `style:`, `refactor:`, `test:`, `build:`, and `ci:` do not trigger a release.
+
+All automatic same-day releases increment `PATCH`; there is no separate major/minor increment in this date-based scheme. Use `workflow_dispatch` with an explicit `release_as` version (for example `1.20261023.5`) when a manual version is required.
 
 CI installs Bun via `oven-sh/setup-bun` (version read from `package.json`'s `packageManager`), then runs `bun install --frozen-lockfile` and `bun run release:ci` (`scripts/release.js`), which will:
 
-1. Find the latest SemVer tag and determine the next version from conventional commits since that tag:
-   - `BREAKING CHANGE:` in the body, or `type!:` in the subject → major
-   - `feat:` → minor
-   - `fix:`, `perf:`, `revert:` → patch
-   - `chore:`, `docs:`, `style:`, `refactor:`, `test:`, `build:`, `ci:` → no release
+1. Determine the version from the UTC date and existing tags for that day
 2. Update `package.json` version and build all scripts with it
 3. Commit build files
 4. Create an annotated Git tag and push the commit and tag
 
 Build commits are tagged `[skip ci]` to avoid re-triggering. Releases are serialized via a `concurrency` group.
 
-**Tag pruning** — only the last 21 SemVer tags are kept. Older SemVer tags are deleted from both remote and local after each release. Legacy date-based tags (`v2026.*`) are not used anymore and were removed during the migration.
+**Tag pruning** — only the last 21 SemVer tags are kept. Older SemVer tags are deleted from both remote and local after each release. Legacy date-based tags (`v2026.*`) were removed during the migration to this scheme.
 
 To preview the next version locally (no build/commit/tag/push):
 
@@ -134,11 +144,16 @@ To preview the next version locally (no build/commit/tag/push):
 bun scripts/release.js --dry-run
 ```
 
-To force a specific bump or version:
+To preview a scheduled (`.0`) release:
 
 ```bash
-bun scripts/release.js --release-as minor
-bun scripts/release.js --release-as 2.0.0
+SCHEDULED=true bun scripts/release.js --dry-run
+```
+
+To force an explicit version:
+
+```bash
+bun scripts/release.js --release-as 1.20261023.0
 ```
 
 ## License

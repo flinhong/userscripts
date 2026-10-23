@@ -4,17 +4,20 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Daily at 00:00 UTC — publishes the day's .0 release
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       release_as:
-        description: "Version bump: major, minor, patch, or an explicit X.Y.Z"
+        description: "Explicit version to release, e.g. 1.20261023.0"
         required: false
         type: string
 
 permissions:
   contents: write
 
-# Serialize releases so a push and a manual run can't race each other
+# Serialize releases so a push, scheduled run, or manual run can't race each other
 concurrency:
   group: release
   cancel-in-progress: false
@@ -46,6 +49,7 @@ jobs:
         run: bun run release:ci
         env:
           RELEASE_AS: ${{ inputs.release_as }}
+          SCHEDULED: ${{ github.event_name == 'schedule' }}
 
       - name: Keep recent SemVer tags (keep last 21)
         run: |
