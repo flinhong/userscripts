@@ -10,9 +10,9 @@
     "Crimson Text", "Charter", "Noto Serif SC", "Songti SC", "Georgia",
     "Cambria", "Times New Roman", "Times", serif;
   --font-mono:
-    "IBM Plex Mono", "Andale Mono", "Noto Serif SC", "Songti SC", ui-monospace,
-    "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono",
-    "Courier New", monospace;
+    "IBM Plex Mono", "BlexMono Nerd Font", "PT Mono", "Noto Serif SC",
+    "Songti SC", ui-monospace, "SFMono-Regular", "Menlo", "Monaco", "Consolas",
+    "Liberation Mono", "Courier New", monospace;
 
   --default-font-family: var(--font-sans) !important;
   --default-mono-font-family: var(--font-mono) !important;
