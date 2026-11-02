@@ -38,10 +38,6 @@
       "match": ["*://dns.frankindev.com/*", "*://doh.frankindev.com/*"]
     },
     {
-      "file": "ebooks-calibre.css",
-      "match": ["*://ebooks.frankindev.com/*"]
-    },
-    {
       "file": "bilibili.css",
       "match": ["*://www.bilibili.com/*"]
     }
