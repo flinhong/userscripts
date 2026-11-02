@@ -40,6 +40,10 @@
     {
       "file": "bilibili.css",
       "match": ["*://www.bilibili.com/*"]
+    },
+    {
+      "file": "smzdm.css",
+      "match": ["*://www.smzdm.com/*", "*://post.smzdm.com/*"]
     }
   ]
 }
