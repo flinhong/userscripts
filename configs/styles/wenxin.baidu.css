@@ -22,7 +22,9 @@ body {
   font-family: var(--font-sans) !important;
 }
 
-._chat-container_r2am5_1,
+/* CSS modules hash the suffix (e.g. _chat-container_<hash>_<n>), so match the
+   stable "_chat-container_" prefix via attribute selector to survive site updates. */
+[class*="_chat-container_"],
 .cosd-markdown .marklang {
   font-family: var(--font-serif) !important;
 }
