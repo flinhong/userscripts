@@ -1,4 +1,4 @@
-@import url("https://cdn.honglin.ac.cn/fonts/css?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
+@import url("https://cdn.honglin.ac.cn/fonts/g/css?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Noto+Serif+SC:wght@200..900&family=Outfit:wght@100..900&display=swap");
 
 :root {
   --font-sans:
@@ -13,7 +13,9 @@
 }
 
 body,
-div,
-p {
+#global-nav,
+#feed-main-list > li .feed-block .z-feed-content .feed-block-title,
+#feed-main-list > li .feed-block .z-feed-content .z-feed-title,
+#feed-main-list .z-highlight {
   font-family: var(--font-sans) !important;
 }
