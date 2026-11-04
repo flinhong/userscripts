@@ -35,7 +35,7 @@
     },
     {
       "file": "adguardhome.css",
-      "match": ["*://dns.frankindev.com/*", "*://doh.frankindev.com/*"]
+      "match": ["*://dns.frankindev.com/*"]
     },
     {
       "file": "bilibili.css",

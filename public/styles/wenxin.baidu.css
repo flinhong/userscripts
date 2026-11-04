@@ -25,7 +25,15 @@ body {
 /* CSS modules hash the suffix (e.g. _chat-container_<hash>_<n>), so match the
    stable "_chat-container_" prefix via attribute selector to survive site updates. */
 [class*="_chat-container_"],
-.cosd-markdown .marklang {
+[class*="_container_"],
+#ci-right-tool,
+#ci-left-tool,
+#ci-main,
+.chat-left-bar,
+.ci-panel-list,
+.cos-pc .cs-bubble,
+.cosd-markdown .marklang,
+.cosd-markdown .marklang .marklang-paragraph {
   font-family: var(--font-serif) !important;
 }
 
