@@ -44,6 +44,10 @@
     {
       "file": "smzdm.css",
       "match": ["*://www.smzdm.com/*", "*://post.smzdm.com/*"]
+    },
+    {
+      "file": "weibo.css",
+      "match": ["*://weibo.com/*"]
     }
   ]
 }
