@@ -25,6 +25,21 @@ function fail(message) {
   process.exit(1);
 }
 
+// Returns the commit a tag points to on the remote, or null if the tag does
+// not exist there (or the remote is unreachable). Best-effort.
+function getRemoteTagCommit(tagName) {
+  try {
+    const output = run(`git ls-remote --tags origin refs/tags/${tagName}`);
+    const lines = output.split("\n").filter(Boolean);
+    const peeled = lines.find(line => line.endsWith(`${tagName}^{}`));
+    const plain = lines.find(line => line.endsWith(tagName));
+    const match = peeled || plain;
+    return match ? match.split(/\s+/)[0] : null;
+  } catch {
+    return null;
+  }
+}
+
 function getOption(name) {
   const index = args.indexOf(name);
   if (index === -1) return null;
@@ -121,11 +136,22 @@ const pkgPath = path.join(ROOT_DIR, "package.json");
 const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 const packageVersion = parseVersion(pkg.version);
 
+// Sync local tags with the remote so we don't miss a tag that a previous run
+// pushed (which would make us create a conflicting one), or reuse a stale tag.
+if (!DRY_RUN) {
+  try {
+    run("git fetch --tags --prune origin");
+  } catch {
+    console.warn("warning: could not fetch remote tags; using local tags only");
+  }
+}
+
 // Only strict SemVer tags are considered; legacy date tags such as
 // v2026.10.21.0 are intentionally ignored.
-const tags = run("git tag --list 'v*'")
+const tags = run("git tag --list")
   .split("\n")
   .filter(Boolean)
+  .filter(tag => tag.startsWith("v"))
   .map(tag => {
     const version = tag.slice(1);
     const parsed = parseVersion(version);
@@ -190,14 +216,33 @@ if (explicit) {
 } else {
   const commits = getCommitsSince(latestTag?.tag);
   if (!hasReleaseWorthyCommits(commits)) {
-    console.log(
-      `no release-worthy commits since ${latestTag ? latestTag.tag : "the first commit"}; nothing to do`,
-    );
-    process.exit(0);
-  }
+    // A previous run may have committed the build (bumping package.json) but
+    // failed to push the tag, leaving main ahead of the latest tag. Recover by
+    // releasing the pending version instead of silently doing nothing.
+    const floor =
+      latestStableTag?.parsed || { major: 0, minor: 0, patch: 0, prerelease: null };
+    const pendingTagOnRemote =
+      packageVersion && !DRY_RUN
+        ? getRemoteTagCommit(`v${formatVersion(packageVersion)}`)
+        : null;
 
-  version = `${major}.${date}.${maxPatch + 1}`;
-  reason = `same-day release ${maxPatch + 1} for ${date}`;
+    if (
+      packageVersion &&
+      compareVersions(packageVersion, floor) > 0 &&
+      !pendingTagOnRemote
+    ) {
+      version = formatVersion(packageVersion);
+      reason = `recover pending release v${version}`;
+    } else {
+      console.log(
+        `no release-worthy commits since ${latestTag ? latestTag.tag : "the first commit"}; nothing to do`,
+      );
+      process.exit(0);
+    }
+  } else {
+    version = `${major}.${date}.${maxPatch + 1}`;
+    reason = `same-day release ${maxPatch + 1} for ${date}`;
+  }
 }
 
 console.log(`release version: v${version} (${reason})`);
@@ -208,6 +253,25 @@ if (DRY_RUN) {
 }
 
 const tagName = `v${version}`;
+
+// Idempotency: if the tag already exists on the remote, either we're done
+// (it points to HEAD) or there is a genuine conflict we must not overwrite.
+if (!DRY_RUN) {
+  const remoteCommit = getRemoteTagCommit(tagName);
+  if (remoteCommit) {
+    const headCommit = run("git rev-parse HEAD");
+    if (remoteCommit === headCommit) {
+      console.log(
+        `tag ${tagName} already exists on remote and points to HEAD; nothing to do`,
+      );
+      process.exit(0);
+    }
+    fail(
+      `tag ${tagName} already exists on remote (${remoteCommit}) but HEAD is ${headCommit}; refusing to overwrite`,
+    );
+  }
+}
+
 if (tags.some(({ tag }) => tag === tagName)) {
   fail(`tag ${tagName} already exists`);
 }
@@ -228,5 +292,16 @@ try {
 // Annotated tag + explicit push: `--follow-tags` only pushes annotated tags,
 // and a lightweight tag would silently fail to reach the remote.
 run(`git tag -a ${tagName} -m "release ${tagName}"`);
-run("git push origin HEAD");
-run(`git push origin ${tagName}`);
+
+// Push the branch and the tag together (atomically) so a rejected tag can't
+// leave the build commit on main without its tag; retry transient failures.
+const pushCmd = `git push --atomic origin HEAD ${tagName}`;
+for (let attempt = 1; ; attempt++) {
+  try {
+    run(pushCmd);
+    break;
+  } catch (err) {
+    if (attempt >= 3) throw err;
+    console.warn(`push failed (attempt ${attempt}/3), retrying...`);
+  }
+}
