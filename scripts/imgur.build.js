@@ -15,12 +15,12 @@ const version = packageJson.version;
 const imgurScriptContent = `(function () {
   "use strict";
 
-  const PROXY = "https://cdn.frankindev.com/images/ddg/?u=";
+  const PROXY = "https://cdn.frankindev.com/images/via/imgur/";
   const IMGUR_RE = /^https?:\\/\\/(?:[a-z0-9-.]+\\.)?imgur\\.com\\//i;
 
   const fixImage = img => {
     if (img.src && IMGUR_RE.test(img.src)) {
-      img.src = PROXY + encodeURIComponent(img.src);
+      img.src = img.src.replace(IMGUR_RE, PROXY);
     }
     if (img.srcset) {
       const newSrcset = img.srcset
@@ -28,7 +28,7 @@ const imgurScriptContent = `(function () {
         .map(s => {
           const [url, dpr] = s.trim().split(" ");
           if (url && IMGUR_RE.test(url)) {
-            return PROXY + encodeURIComponent(url) + (dpr ? " " + dpr : "");
+            return url.replace(IMGUR_RE, PROXY) + (dpr ? " " + dpr : "");
           }
           return s;
         })
