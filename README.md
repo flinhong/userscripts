@@ -28,8 +28,8 @@ Install scripts directly from CDN:
 
 | Script        | URL                                                                                                               |
 | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Custom Styles | [style.userscripts.js](https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js) |
-| Imgur Proxy   | [imgur.userscripts.js](https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js) |
+| Custom Styles | [style.userscripts.js](https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/style.userscripts.js) |
+| Imgur Proxy   | [imgur.userscripts.js](https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/imgur.userscripts.js) |
 
 ## Project Structure
 
@@ -103,8 +103,8 @@ Current rules in `configs/domain.json`:
 Resources are available via CDN with versioned URLs:
 
 ```
-https://cdn.frankindev.com/statically/gh/flinhong/userscripts@{version}/public/domain.json
-https://cdn.frankindev.com/statically/gh/flinhong/userscripts@{version}/public/styles/*.css
+https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@{version}/public/domain.json
+https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@{version}/public/styles/*.css
 ```
 
 ## Release (CI)

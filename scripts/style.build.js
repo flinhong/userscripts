@@ -5,7 +5,7 @@ const ROOT_DIR = path.join(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const STYLES_DIR = path.join(ROOT_DIR, "configs", "styles");
 const CDN_BASE =
-  "https://cdn.frankindev.com/statically/gh/flinhong/userscripts";
+  "https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts";
 
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(ROOT_DIR, "package.json"), "utf-8"),
@@ -59,7 +59,7 @@ ${matchLines}
     console.error("[Custom Styles] Failed to get version:", e.message);
   }
   const BASE_URL =
-    "https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@v" +
+    "https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@v" +
     version +
     "/public";
 

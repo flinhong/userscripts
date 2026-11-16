@@ -4,7 +4,7 @@ const path = require("path");
 const ROOT_DIR = path.join(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 const CDN_BASE =
-  "https://cdn.frankindev.com/statically/gh/flinhong/userscripts";
+  "https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts";
 
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(ROOT_DIR, "package.json"), "utf-8"),
@@ -15,7 +15,7 @@ const version = packageJson.version;
 const imgurScriptContent = `(function () {
   "use strict";
 
-  const PROXY = "https://cdn.frankindev.com/images/via/imgur/";
+  const PROXY = "https://core.cdn.honglin.ac.cn/images/via/imgur/";
   const IMGUR_RE = /^https?:\\/\\/(?:[a-z0-9-.]+\\.)?imgur\\.com\\//i;
 
   const fixImage = img => {
