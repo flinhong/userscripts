@@ -6,8 +6,8 @@
 // @author       Frank Lin
 // @icon         https://frankindev.com/assets/img/logo.svg
 // @match        *://*/*
-// @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
-// @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
+// @updateURL    https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
+// @downloadURL  https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/imgur.userscripts.js
 // @grant        none
 // @run-at       document-start
 // @inject-into  content
@@ -16,7 +16,7 @@
 (function () {
   "use strict";
 
-  const PROXY = "https://cdn.frankindev.com/images/via/imgur/";
+  const PROXY = "https://core.cdn.honglin.ac.cn/images/via/imgur/";
   const IMGUR_RE = /^https?:\/\/(?:[a-z0-9-.]+\.)?imgur\.com\//i;
 
   const fixImage = img => {

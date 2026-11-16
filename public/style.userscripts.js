@@ -24,8 +24,8 @@
 // @match        *://www.smzdm.com/*
 // @match        *://post.smzdm.com/*
 // @match        *://weibo.com/*
-// @updateURL    https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
-// @downloadURL  https://cdn.frankindev.com/statically/gh/flinhong/userscripts/public/style.userscripts.js
+// @updateURL    https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/style.userscripts.js
+// @downloadURL  https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts/public/style.userscripts.js
 // @grant        GM.xmlHttpRequest
 // @grant        GM.addStyle
 // @run-at       document-end
@@ -52,7 +52,7 @@
     console.error("[Custom Styles] Failed to get version:", e.message);
   }
   const BASE_URL =
-    "https://cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@v" +
+    "https://core.cdn.honglin.ac.cn/statically/gh/flinhong/userscripts@v" +
     version +
     "/public";
 
