@@ -24,6 +24,6 @@
   },
   "homepage": "https://github.com/flinhong/userscripts#readme",
   "devDependencies": {
-    "prettier": "^3.8.1"
+    "prettier": "^3.10.1"
   }
 }
