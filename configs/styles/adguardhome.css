@@ -17,14 +17,3 @@ pre,
 code {
   font-family: var(--font-mono) !important;
 }
-
-/* log count cells: total (#/logs) and per-status (#/logs?status=...) */
-a[href*="#/logs"].inactive {
-  font-family: var(--font-mono) !important;
-}
-
-/* client IP cells: title holds the address (v6 has ":", v4 has ".") */
-button[title*=":"],
-button[title*="."] {
-  font-family: var(--font-mono) !important;
-}
